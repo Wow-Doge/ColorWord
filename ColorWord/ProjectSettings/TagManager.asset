@@ -3,7 +3,10 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - NPC
+  - NPC2
+  - NPC3
   layers:
   - Default
   - TransparentFX
@@ -13,8 +16,8 @@ TagManager:
   - UI
   - 
   - 
-  - Player
-  - NPC
+  - PlayerLayer
+  - NPCLayer
   - 
   - 
   - 

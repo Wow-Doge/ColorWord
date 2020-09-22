@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {  
-
+        
     }
 
     void FixedUpdate()
@@ -31,9 +32,19 @@ public class PlayerController : MonoBehaviour
     private void OnTriggerStay2D(Collider2D collision)
     {
         IInteractable interactable = collision.GetComponent<IInteractable>();
-        if (Input.GetKeyDown(KeyCode.T) && interactable != null)
+        if (interactable != null && Input.GetKeyDown(KeyCode.T))
         {
             interactable.Interact();
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        collision.gameObject.GetComponent<NPCController>().enabled = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        collision.gameObject.GetComponent<NPCController>().enabled = false;
     }
 }
