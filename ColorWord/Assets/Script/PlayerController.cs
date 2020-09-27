@@ -11,22 +11,26 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rb2d;
     float horizontalMove;
     float speed = 5f;
-    public TextMeshProUGUI text;
-    public GameObject inputField;
+    public bool canMove;
     void Start()
     {
+        canMove = true;
         rb2d = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
-    {  
-        
+    void Update()
+    {
+        horizontalMove = Input.GetAxisRaw("Horizontal");
+
     }
 
     void FixedUpdate()
     {
-        horizontalMove = Input.GetAxisRaw("Horizontal");
-        rb2d.velocity = new Vector2(horizontalMove * speed, rb2d.position.y);
+        if (canMove)
+        {
+            rb2d.velocity = new Vector2(horizontalMove * speed, rb2d.position.y);
+        }
+        return;
     }
 
     private void OnTriggerStay2D(Collider2D collision)

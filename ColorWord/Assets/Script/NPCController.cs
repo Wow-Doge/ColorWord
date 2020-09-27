@@ -12,61 +12,87 @@ public class NPCController : MonoBehaviour, IInteractable
     GameObject dialog;
     GameObject dialogSystem;
     TextMeshProUGUI dialogText;
+    GameObject inputSystem;
+    TMP_InputField inputField;
     Button submitButton;
-    [SerializeField]
-    private string npcDialog;
+    Button skipButton;
+    GameObject notification;
+    Button skipNotification;
 
-    GameObject resultDialog;
-    TextMeshProUGUI resultDialogText;
-    Button resultDialogButton;
-
-    Button quitButton;
-
-    [SerializeField]
-    private string rightAnswer;
-    [SerializeField]
-    private string wrongAnswer;
-
-    //public event EventHandler OnPlayerStartInteract;
+    PlayerController playerController;
 
     [SerializeField]
     private string keyWord;
+    [SerializeField]
+    private string npcDialog;
+
     private string inputString;
-    TMP_InputField inputField;
+
+    bool isAnswered;
+
+    StarCount starCount;
+
+    SpriteRenderer spriteRenderer;
+
+    private void Awake()
+    {
+        isAnswered = false;
+    }
     void Start()
     {
         canvas = GameObject.Find("Canvas");
         dialog = canvas.transform.GetChild(0).gameObject;
 
         dialogSystem = dialog.transform.GetChild(0).gameObject;
-        dialogText = dialogSystem.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        dialogText = dialogSystem.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
 
-        resultDialog = dialogSystem.transform.GetChild(1).gameObject;
-        resultDialogText = resultDialog.GetComponent<TextMeshProUGUI>();
-        resultDialogButton = resultDialog.transform.GetChild(0).gameObject.GetComponent<Button>();
+        inputSystem = dialog.transform.GetChild(1).gameObject;
+        inputField = inputSystem.transform.GetChild(0).gameObject.GetComponent<TMP_InputField>();
+        submitButton = inputSystem.transform.GetChild(1).gameObject.GetComponent<Button>();
+        skipButton = inputSystem.transform.GetChild(2).gameObject.GetComponent<Button>();
 
-        inputField = dialog.transform.GetChild(1).gameObject.GetComponent<TMP_InputField>();
-        submitButton = dialog.transform.GetChild(2).gameObject.GetComponent<Button>();
+        notification = dialog.transform.GetChild(2).gameObject;
+        skipNotification = notification.transform.GetChild(1).gameObject.GetComponent<Button>();
 
-        quitButton = dialog.transform.GetChild(3).gameObject.GetComponent<Button>();
-        quitButton.onClick.AddListener(DisableDialog);
+        starCount = canvas.transform.GetChild(1).gameObject.GetComponent<StarCount>();
 
-        //OnPlayerStartInteract += Highlight;
+        playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        
+
+        skipButton.onClick.AddListener(SkipDialog);
     }
-
-    //private void Highlight(object sender, EventArgs e)
-    //{
-    //    Debug.Log("Highlight");
-    //}
 
     public void Interact()
     {
-        dialog.SetActive(true);
-        //OnPlayerStartInteract?.Invoke(this, EventArgs.Empty);
-        dialogText.enabled = true;
-        dialogText.text = npcDialog;
-        submitButton.onClick.RemoveAllListeners();
-        submitButton.onClick.AddListener(CheckWord);
+        playerController.canMove = false;
+        if (isAnswered == true)
+        {
+            dialog.SetActive(true);
+            dialogText.text = "thank you";
+            StopAllCoroutines();
+            notification.SetActive(false);
+            StartCoroutine(AutoDisableDialog(dialog));
+        }
+        else
+        {
+            dialog.SetActive(true);
+            StopAllCoroutines();
+            StartCoroutine(TypeDialog());
+            submitButton.onClick.RemoveAllListeners();
+            submitButton.onClick.AddListener(CheckWord);
+        }
+    }
+
+    IEnumerator TypeDialog ()
+    {
+        dialogText.text = "";
+        foreach (char letter in npcDialog.ToCharArray())
+        {
+            dialogText.text += letter;
+            yield return new WaitForSeconds(0.02f); 
+        }
     }
 
     private void CheckWord()
@@ -74,28 +100,52 @@ public class NPCController : MonoBehaviour, IInteractable
         inputString = inputField.text;
         if (string.Equals(keyWord, inputString))
         {
-            ResultDialog(rightAnswer);
+            RightAnswer();
             Debug.Log("Match");
         }
         else
         {
-            ResultDialog(wrongAnswer);
+            WrongAnswer();
             Debug.Log("Mismatch");
         }
     }
 
-    void ResultDialog(string resultText)
+
+    private void RightAnswer()
     {
-        resultDialog.SetActive(true);
-        resultDialogText.text = resultText;
-        dialogText.enabled = false;
-        resultDialogButton.onClick.RemoveAllListeners();
-        resultDialogButton.onClick.AddListener(DisableDialog);
+        Destroy(spriteRenderer.material);
+        starCount.numOfStar += 1;
+        isAnswered = true;
+        notification.SetActive(true);
+        TextMeshProUGUI text = notification.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        text.text = "thanks";
+        skipNotification.onClick.RemoveAllListeners();
+        skipNotification.onClick.AddListener(SkipNotification);
+        skipNotification.onClick.AddListener(SkipDialog);
     }
 
-    public void DisableDialog()
+    private void WrongAnswer()
     {
-        resultDialog.SetActive(false);
+        notification.SetActive(true);
+        TextMeshProUGUI text = notification.transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        text.text = "Wrong answer";
+        skipNotification.onClick.RemoveAllListeners();
+        skipNotification.onClick.AddListener(SkipNotification);
+    }
+    private void SkipDialog()
+    {
+        playerController.canMove = true;
         dialog.SetActive(false);
+    }
+    private void SkipNotification()
+    {
+        notification.SetActive(false);
+    }
+
+    IEnumerator AutoDisableDialog(GameObject gameObject)
+    {
+        yield return new WaitForSeconds(1.25f);
+        gameObject.SetActive(false);
+        playerController.canMove = true;
     }
 }
