@@ -9,14 +9,16 @@ public class WordManager : MonoBehaviour
 
     private bool hasActiveWord;
     private Word activeWord;
+
+
+    public int wordCount;
     void Start()
     {
-        
+        wordCount = 0;
     }
 
     public void AddWord()
-    {
-        
+    { 
         Word word = new Word(WordGenerator.GetRandomWord(), wordSpawner.SpawnWord());
         Debug.Log(word.word);
 
@@ -50,6 +52,7 @@ public class WordManager : MonoBehaviour
         {
             hasActiveWord = false;
             words.Remove(activeWord);
+            wordCount += 1;
         }
     }
 }

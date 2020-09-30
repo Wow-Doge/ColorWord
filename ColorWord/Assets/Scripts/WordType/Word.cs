@@ -9,7 +9,6 @@ public class Word
     private int typeIndex;
 
     WordDisplay display;
-
     public Word(string _word, WordDisplay _display)
     {
         word = _word;

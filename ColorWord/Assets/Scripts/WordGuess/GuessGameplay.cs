@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WordGameplay : MonoBehaviour
+public class GuessGameplay : MonoBehaviour
 {
-    public WordManager wordManager;
     public enum State
     {
-        Idle,
         Start,
         End,
     }
 
     private State state;
+
     void Start()
     {
         
@@ -21,5 +20,11 @@ public class WordGameplay : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void StartGuess()
+    {
+        state = State.Start;
+        Debug.Log("Start the game");
     }
 }
