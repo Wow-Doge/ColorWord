@@ -1,9 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
-public class GuessManager : MonoBehaviour
+public class GuessDisplay : MonoBehaviour
 {
     void Start()
     {
@@ -14,6 +13,4 @@ public class GuessManager : MonoBehaviour
     {
         
     }
-
-
 }
