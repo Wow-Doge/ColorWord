@@ -56,6 +56,16 @@ public class GuessGameplay : MonoBehaviour
         if (answer.Contains(letter))
         {
             UpdateAnswer(letter);
+            if (CheckWinCondition())
+            {
+                Debug.Log("Congratulation");
+                //Do something to congratulate player;
+            }
+        }
+        else
+        {
+            Debug.Log("wrong letter");
+            //Punish player when they press wrong letter button;
         }
     }
 
@@ -76,5 +86,10 @@ public class GuessGameplay : MonoBehaviour
             }
         }
         userInput = new string(userInputArray);
+    }
+
+    public bool CheckWinCondition()
+    {
+        return answer.Equals(userInput);
     }
 }
