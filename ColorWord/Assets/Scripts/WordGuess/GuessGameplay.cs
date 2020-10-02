@@ -11,23 +11,25 @@ public class GuessGameplay : MonoBehaviour
 {
     public GameObject guessGameplay;
     public GameObject letterPrefab;
+
     [SerializeField]
     private string answer;
 
-    private string placeholder = "_";
+    private const char placeholder = '_';
 
     private string userInput;
 
-    Transform letterTransform;
+    Transform answerTextTransform;
+
     void Start()
     {
-        letterTransform = guessGameplay.transform.GetChild(0).gameObject.transform;
+        answerTextTransform = guessGameplay.transform.GetChild(0).gameObject.transform;
         CreateAnswerField();
     }
 
     void Update()
     {
-        
+
     }
 
     public void DisplayGame()
@@ -37,10 +39,13 @@ public class GuessGameplay : MonoBehaviour
 
     public void CreateAnswerField()
     {
+        StringBuilder sb = new StringBuilder(userInput, 20);
         for (int i = 0; i < answer.Length; i++)
         {
-            Instantiate(letterPrefab, new Vector3(1f * i, letterTransform.position.y, letterTransform.position.z), Quaternion.identity, letterTransform);
-            TextMeshProUGUI textLetter = letterTransform.GetComponentInChildren<TextMeshProUGUI>();
+            sb.Append(placeholder);
+            userInput = sb.ToString();
+            Instantiate(letterPrefab, new Vector3(1f * i - 1f, answerTextTransform.position.y, answerTextTransform.position.z), Quaternion.identity, answerTextTransform);
+            TextMeshProUGUI textLetter = answerTextTransform.GetComponentInChildren<TextMeshProUGUI>();
             textLetter.text = placeholder.ToString();
         }
     }
@@ -50,10 +55,26 @@ public class GuessGameplay : MonoBehaviour
         char letter = button.GetComponentInChildren<TextMeshProUGUI>().text.ToCharArray()[0];
         if (answer.Contains(letter))
         {
-            int index = answer.IndexOf(letter);
-            Debug.Log(index);
-            TextMeshProUGUI textLetterPosition = letterTransform.GetChild(index).gameObject.GetComponent<TextMeshProUGUI>();
-            textLetterPosition.text = letter.ToString();
+            UpdateAnswer(letter);
         }
+    }
+
+    public void UpdateAnswer(char letter)
+    {
+        char[] userInputArray = userInput.ToCharArray();
+        for (int i = 0; i < answer.Length; i++)
+        {
+            if (userInputArray[i] != placeholder)
+            {
+                continue;
+            }
+            if (answer[i] == letter)
+            {
+                userInputArray[i] = letter;
+                TextMeshProUGUI text = answerTextTransform.GetChild(i).gameObject.transform.GetComponent<TextMeshProUGUI>();
+                text.text = letter.ToString();
+            }
+        }
+        userInput = new string(userInputArray);
     }
 }
