@@ -92,4 +92,9 @@ public class GuessGameplay : MonoBehaviour
     {
         return answer.Equals(userInput);
     }
+
+    public void Hint()
+    {
+        
+    }
 }
