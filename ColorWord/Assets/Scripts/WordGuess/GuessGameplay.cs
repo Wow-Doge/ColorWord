@@ -19,11 +19,11 @@ public class GuessGameplay : MonoBehaviour
 
     private string userInput;
 
-    Transform answerTextTransform;
+    Transform answerField;
 
     void Start()
     {
-        answerTextTransform = guessGameplay.transform.GetChild(0).gameObject.transform;
+        answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
         CreateAnswerField();
     }
 
@@ -44,8 +44,8 @@ public class GuessGameplay : MonoBehaviour
         {
             sb.Append(placeholder);
             userInput = sb.ToString();
-            Instantiate(letterPrefab, new Vector3(1f * i - 1f, answerTextTransform.position.y, answerTextTransform.position.z), Quaternion.identity, answerTextTransform);
-            TextMeshProUGUI textLetter = answerTextTransform.GetComponentInChildren<TextMeshProUGUI>();
+            Instantiate(letterPrefab, new Vector3(1f * i - 1f, answerField.position.y, answerField.position.z), Quaternion.identity, answerField);
+            TextMeshProUGUI textLetter = answerField.GetComponentInChildren<TextMeshProUGUI>();
             textLetter.text = placeholder.ToString();
         }
     }
@@ -81,7 +81,7 @@ public class GuessGameplay : MonoBehaviour
             if (answer[i] == letter)
             {
                 userInputArray[i] = letter;
-                TextMeshProUGUI text = answerTextTransform.GetChild(i).gameObject.transform.GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI text = answerField.GetChild(i).gameObject.transform.GetComponent<TextMeshProUGUI>();
                 text.text = letter.ToString();
             }
         }

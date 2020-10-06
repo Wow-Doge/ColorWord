@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UICategory : MonoBehaviour
+public class UILevel : MonoBehaviour
 {
-    public Transform categoryListContainer;
-    public GameObject categoryListPrefab;
+    public GameObject levelListPrefab;
     void Start()
     {
-        GuessManager.Instance.GetCategoryInfos(categoryListPrefab, categoryListContainer);
+        
     }
-
     void Update()
     {
         

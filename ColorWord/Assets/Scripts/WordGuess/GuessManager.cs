@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -10,17 +11,21 @@ public class GuessManager : SingletonComponent<GuessManager>
     {
         public string name;
         public string displayName;
-        public List<LevelInfo> levelInfo;
+        public List<LevelInfo> levelInfos;
     }
+
     [SerializeField]
     private List<CategoryInfo> categoryInfos;
 
     [System.Serializable]
     public class LevelInfo
     {
-        public string answer;
+        public string name;
+        public int levelID;
         public string question;
+        public string answer;
     }
+
     void Start()
     {
         
@@ -31,11 +36,11 @@ public class GuessManager : SingletonComponent<GuessManager>
         
     }
 
-    public void GetCategoryInfos(GameObject categoryInformation)
+    public void GetCategoryInfos(GameObject categoryPrefab, Transform categoryListContainer)
     {
         for (int i = 0; i < categoryInfos.Count; i++)
         {
-            Instantiate(categoryInformation);
+            Instantiate(categoryPrefab, categoryListContainer);
         }
     }
 }

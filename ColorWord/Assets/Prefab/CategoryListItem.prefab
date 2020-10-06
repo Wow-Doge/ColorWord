@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 723217943470449421}
   - component: {fileID: 723217943470449420}
   - component: {fileID: 780095450}
+  - component: {fileID: 5200062648105091812}
   m_Layer: 5
-  m_Name: CategoryList
+  m_Name: CategoryListItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -141,6 +142,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &5200062648105091812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 723217943470449422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42c3b29b98e06e346ba3be56cdf0b2de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &723217944012934823
 GameObject:
   m_ObjectHideFlags: 0
