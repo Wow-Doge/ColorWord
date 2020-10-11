@@ -7,6 +7,7 @@ public class UICategory : MonoBehaviour
 {
     public Transform categoryListContainer;
     public GameObject categoryListPrefab;
+
     void Start()
     {
         GuessManager.Instance.GetCategoryInfos(categoryListPrefab, categoryListContainer);
@@ -18,7 +19,7 @@ public class UICategory : MonoBehaviour
         
     }
 
-    public void Display()
+    public void DisplayUICategory()
     {
         gameObject.SetActive(true);
     }
@@ -29,19 +30,14 @@ public class UICategory : MonoBehaviour
         {
             CategoryInfo categoryInfo = GuessManager.Instance.CategoryInfos[i];
             CategoryListItem categoryListItem = gameObject.transform.GetChild(1).gameObject.transform.GetChild(i).transform.GetComponent<CategoryListItem>();
-            //CategoryListItem categoryListItem = categoryListPrefab.GetComponent<CategoryListItem>();
             categoryListItem.Setup(categoryInfo);
         }
     }
 
-    public void DisableUICategory()
+    public void HideCategory()
     {
-        gameObject.SetActive(false);
+        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+        rectTransform.offsetMin = new Vector2(900, 0);
+        rectTransform.offsetMax = new Vector2(900, 0);
     }
-
-    public void SetupLevel()
-    {
-
-    }
-
 }

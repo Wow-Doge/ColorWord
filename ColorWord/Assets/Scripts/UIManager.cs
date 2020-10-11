@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIManager : MonoBehaviour
+public class UIManager : SingletonComponent<UIManager>
 {
-    // Start is called before the first frame update
+    public string activeCategoryName;
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         

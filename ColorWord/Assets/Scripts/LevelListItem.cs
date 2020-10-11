@@ -13,4 +13,9 @@ public class LevelListItem : MonoBehaviour
     {
         
     }
+
+    public void GetLevelInfo()
+    {
+
+    }
 }

@@ -50,12 +50,15 @@ public class GuessManager : SingletonComponent<GuessManager>
         }
     }
 
-    //public CategoryInfo GetCategoryInfo()
-    //{
-    //    for (int i = 0; i < CategoryInfos.Count; i++)
-    //    {
-    //        return CategoryInfos[i];
-    //    }
-    //    return null;
-    //}
+    public CategoryInfo GetCategoryInfo(string categoryName)
+    {
+        for (int i = 0; i < CategoryInfos.Count; i++)
+        {
+            if (categoryName == categoryInfos[i].name)
+            {
+                return CategoryInfos[i];
+            }
+        }
+        return null;
+    }
 }
