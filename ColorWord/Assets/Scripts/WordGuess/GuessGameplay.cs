@@ -13,6 +13,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     public GameObject letterPrefab;
 
     public GameObject questionField;
+
+    public GameObject uICompleteScreen;
     public string answer;
 
     private const char placeholder = '_';
@@ -39,6 +41,14 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     public void CreateAnswerField()
     {
         StringBuilder sb = new StringBuilder(userInput, 20);
+        if (answerField.childCount > 0)
+        {
+            sb.Remove(0, userInput.Length);
+            foreach (Transform childObject in answerField.transform)
+            {
+                Destroy(childObject.gameObject);
+            }
+        }
         for (int i = 0; i < answer.Length; i++)
         {
             sb.Append(placeholder);
@@ -57,7 +67,9 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             UpdateAnswer(letter);
             if (CheckWinCondition())
             {
+                StopCoroutine(ShowCompleteScreen());
                 Debug.Log("Congratulation");
+                StartCoroutine(ShowCompleteScreen());
                 //Do something to congratulate player;
             }
         }
@@ -92,8 +104,19 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         return answer.Equals(userInput);
     }
 
-    public void Hint()
+    IEnumerator ShowCompleteScreen()
     {
-        
+        yield return new WaitForSeconds(1f);
+        uICompleteScreen.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        uICompleteScreen.SetActive(false);
+        ReturnToUILevel();
+    }
+
+    public void ReturnToUILevel()
+    {
+        UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
+        uILevel.ShowLevel();
+        guessGameplay.SetActive(false);
     }
 }
