@@ -8,6 +8,10 @@ public class UILevel : MonoBehaviour
     public GameObject levelListPrefab;
 
     public string activeCategoryName;
+
+    GameObject levelListObject;
+
+    public GameObject uILevelTopBar;
     void Start()
     {
         
@@ -31,7 +35,11 @@ public class UILevel : MonoBehaviour
             {
                 for (int j = 0; j < categoryInfo.levelInfos.Count; j++)
                 {
-                    Instantiate(levelListPrefab, levelListContainer);
+                    levelListObject = Instantiate(levelListPrefab, levelListContainer);
+                    LevelListItem levelListItem = levelListObject.GetComponent<LevelListItem>();
+                    levelListItem.levelQuestion = categoryInfo.levelInfos[j].question;
+                    levelListItem.levelAnswer = categoryInfo.levelInfos[j].answer;
+                    levelListItem.levelName = categoryInfo.levelInfos[j].name;
                 }
             }
         }
@@ -43,5 +51,16 @@ public class UILevel : MonoBehaviour
         rectTransform.offsetMin = new Vector2(0, 0);
         rectTransform.offsetMax = new Vector2(0, 0);
         Debug.Log("Ok");
+    }
+
+    public void HideLevel()
+    {
+        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+        rectTransform.offsetMin = new Vector2(-900, 0);
+        rectTransform.offsetMax = new Vector2(-900, 0);
+        foreach (Transform childObject in levelListContainer)
+        {
+            Destroy(childObject.gameObject);
+        }
     }
 }

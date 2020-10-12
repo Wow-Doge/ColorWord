@@ -7,13 +7,13 @@ using System.Text;
 using UnityEngine.UI;
 using System;
 
-public class GuessGameplay : MonoBehaviour
+public class GuessGameplay : SingletonComponent<GuessGameplay>
 {
     public GameObject guessGameplay;
     public GameObject letterPrefab;
 
-    [SerializeField]
-    private string answer;
+    public GameObject questionField;
+    public string answer;
 
     private const char placeholder = '_';
 
@@ -24,12 +24,11 @@ public class GuessGameplay : MonoBehaviour
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
-        CreateAnswerField();
     }
 
     void Update()
     {
-
+        
     }
 
     public void DisplayGame()
