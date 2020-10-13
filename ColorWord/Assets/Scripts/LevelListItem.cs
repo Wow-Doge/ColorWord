@@ -11,6 +11,17 @@ public class LevelListItem : MonoBehaviour
     public string levelAnswer;
 
     TextMeshProUGUI levelNameText;
+
+    public enum Type
+    {
+        Normal,
+        Locked,
+        Completed
+    }
+
+    [SerializeField]
+    private Type type;
+
     void Start()
     {
         levelNameText = gameObject.GetComponentInChildren<TextMeshProUGUI>();
