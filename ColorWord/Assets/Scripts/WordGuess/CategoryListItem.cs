@@ -9,6 +9,12 @@ public class CategoryListItem : MonoBehaviour
 {
     TextMeshProUGUI categoryText;
     public string categoryName;
+
+
+    private void Awake()
+    {
+        
+    }
     void Start()
     {
         
@@ -16,18 +22,10 @@ public class CategoryListItem : MonoBehaviour
 
     public void Setup(CategoryInfo categoryInfo)
     {
-        
-        float numOfLevels = categoryInfo.levelInfos.Count;
 
         categoryText = gameObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>();
         categoryName = categoryInfo.name;
         categoryText.text = categoryName;
-        GetNumberOfLevels(numOfLevels);
-    }
-
-    public float GetNumberOfLevels(float number)
-    {
-        return number;
     }
 
     public void HideCategoryList()
@@ -45,5 +43,6 @@ public class CategoryListItem : MonoBehaviour
         uILevel.ShowLevel();
         uILevel.activeCategoryName = categoryName;
         uILevel.DisplayLevel();
+        GuessGameplay.Instance.activeCategoryInfo = categoryName;
     }
 }

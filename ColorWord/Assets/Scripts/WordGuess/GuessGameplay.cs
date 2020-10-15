@@ -23,6 +23,9 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     Transform answerField;
 
+    public string activeCategoryInfo;
+    public int activeLevelIndex;
+  
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
@@ -117,6 +120,19 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         uILevel.ShowLevel();
+        uILevel.CountAvailableLevel();
         guessGameplay.SetActive(false);
+    }
+
+    public bool IsLevelCompleted(int levelIndex)
+    {
+        if (levelIndex == activeLevelIndex)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

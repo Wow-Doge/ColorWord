@@ -12,20 +12,18 @@ public class UILevel : MonoBehaviour
     GameObject levelListObject;
 
     public GameObject uILevelTopBar;
-    void Start()
-    {
-        
-    }
-    void Update()
-    {
-        
-    }
+
+    public int numberOfAvailableLevel;
 
     public void DisplayUILevel()
     {
         gameObject.SetActive(true);
     }
 
+    private void Awake()
+    {
+        numberOfAvailableLevel = 1;
+    }
     public void DisplayLevel()
     {
         for (int i = 0; i < GuessManager.Instance.CategoryInfos.Count; i++)
@@ -40,17 +38,33 @@ public class UILevel : MonoBehaviour
                     levelListItem.levelQuestion = categoryInfo.levelInfos[j].question;
                     levelListItem.levelAnswer = categoryInfo.levelInfos[j].answer;
                     levelListItem.levelName = categoryInfo.levelInfos[j].name;
+                    levelListItem.levelIndex = j + 1;
+                    if (j + 1 <= numberOfAvailableLevel)
+                    {
+                        if (GuessGameplay.Instance.IsLevelCompleted(j + 1))
+                        {
+                            levelListItem.type = LevelListItem.Type.Completed;
+                        }
+                        else if (!GuessGameplay.Instance.IsLevelCompleted(j + 1))
+                        {
+                            levelListItem.type = LevelListItem.Type.Normal;
+                        }
+                    }
+                    else if (j + 1 > numberOfAvailableLevel)
+                    {
+                        levelListItem.type = LevelListItem.Type.Locked;
+                    }
+                    levelListItem.Setup(levelListItem.type);
                 }
             }
         }
     }
-
+    
     public void ShowLevel()
     {
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
         rectTransform.offsetMin = new Vector2(0, 0);
         rectTransform.offsetMax = new Vector2(0, 0);
-        Debug.Log("Ok");
     }
 
     public void HideLevel()
@@ -62,5 +76,14 @@ public class UILevel : MonoBehaviour
         {
             Destroy(childObject.gameObject);
         }
+    }
+
+    public int CountAvailableLevel()
+    {
+        if (GuessGameplay.Instance.CheckWinCondition())
+        {
+            numberOfAvailableLevel += 1;
+        }
+        return numberOfAvailableLevel;
     }
 }
