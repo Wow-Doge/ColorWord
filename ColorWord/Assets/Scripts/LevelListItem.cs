@@ -6,16 +6,23 @@ using UnityEngine;
 
 public class LevelListItem : MonoBehaviour
 {
-    public string levelName;
-    public int levelIndex;
-    public string levelQuestion;
-    public string levelAnswer;
+    //[SerializeField]
+    //private string levelName;
+    //[SerializeField]
+    //private int levelIndex;
+    [SerializeField]
+    private string levelQuestion;
+    [SerializeField]
+    private string levelAnswer;
 
     TextMeshProUGUI levelNameText;
 
     public GameObject completedLevelImage;
     public GameObject lockedLevelImage;
 
+    private string categoryName;
+    [SerializeField]
+    private int levelIndex;
     public enum Type
     {
         Normal,
@@ -24,24 +31,37 @@ public class LevelListItem : MonoBehaviour
     }
 
     public Type type;
+
     void Start()
     {
         levelNameText = gameObject.GetComponentInChildren<TextMeshProUGUI>();
-        levelNameText.text = levelName;
+        levelNameText.text = levelIndex.ToString();
     }
 
-    void Update()
-    {
-        
-    }
+    //public void Setup(string levelName, int levelIndex, string levelQuestion, string levelAnswer,Type type)
+    //{
+    //    this.type = type;
+    //    this.levelName = levelName;
+    //    this.levelIndex = levelIndex;
+    //    this.levelQuestion = levelQuestion;
+    //    this.levelAnswer = levelAnswer;
 
-    public void Setup(Type type)
+    //    completedLevelImage.gameObject.SetActive(type == Type.Completed);
+    //    lockedLevelImage.gameObject.SetActive(type == Type.Locked);
+    //}
+
+    public void Setup(CategoryInfo categoryInfo, int levelIndex, Type type, string levelAnswer, string levelQuestion)
     {
+        this.categoryName = categoryInfo.name;
+        this.levelIndex = levelIndex;
         this.type = type;
+        this.levelAnswer = levelAnswer;
+        this.levelQuestion = levelQuestion;
 
         completedLevelImage.gameObject.SetActive(type == Type.Completed);
         lockedLevelImage.gameObject.SetActive(type == Type.Locked);
     }
+
     public void GetLevelInfo()
     {
         if (type != Type.Locked)
@@ -49,10 +69,11 @@ public class LevelListItem : MonoBehaviour
             GameObject canvas = GameObject.Find("Canvas");
             GameObject guessGameplayObject = canvas.gameObject.transform.GetChild(4).gameObject;
             guessGameplayObject.SetActive(true);
-            GuessGameplay.Instance.answer = levelAnswer.ToUpper();
-            GuessGameplay.Instance.CreateAnswerField();
-            GuessGameplay.Instance.questionField.gameObject.transform.GetComponent<TextMeshProUGUI>().text = levelQuestion;
-            GuessGameplay.Instance.activeLevelIndex = levelIndex;
+            //GuessGameplay.Instance.answer = levelAnswer.ToUpper();
+            //GuessGameplay.Instance.CreateAnswerField();
+            //GuessGameplay.Instance.questionField.gameObject.transform.GetComponent<TextMeshProUGUI>().text = levelQuestion;
+            //GuessGameplay.Instance.activeLevelIndex = levelIndex;
+            GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex);
         }
 
     }

@@ -9,54 +9,72 @@ public class UILevel : MonoBehaviour
 
     public string activeCategoryName;
 
-    GameObject levelListObject;
-
     public GameObject uILevelTopBar;
 
-    public int numberOfAvailableLevel;
+    private ObjectPool levelItemObjectPool;
 
+    public int numbersOfActiveLevel;
     public void DisplayUILevel()
     {
         gameObject.SetActive(true);
     }
 
-    private void Awake()
+    public void Start()
     {
-        numberOfAvailableLevel = 1;
+        levelItemObjectPool = new ObjectPool(levelListPrefab, 10, levelListContainer);
     }
+    //public void DisplayLevel()
+    //{
+    //    for (int i = 0; i < GuessManager.Instance.CategoryInfos.Count; i++)
+    //    {
+    //        CategoryInfo categoryInfo = GuessManager.Instance.CategoryInfos[i];
+    //        if (activeCategoryName == categoryInfo.name)
+    //        {
+    //            for (int j = 0; j < categoryInfo.levelInfos.Count; j++)
+    //            {
+    //                levelListObject = Instantiate(levelListPrefab, levelListContainer);
+    //                LevelListItem levelListItem = levelListObject.GetComponent<LevelListItem>();
+
+    //                LevelListItem.Type type;
+    //                if (GuessGameplay.Instance.IsLevelCompleted(activeCategoryName, j + 1))
+    //                {
+    //                    type = LevelListItem.Type.Completed;
+    //                }
+    //                else
+    //                {
+    //                    type = LevelListItem.Type.Normal;
+    //                }
+    //                levelListItem.Setup(categoryInfo.levelInfos[j].name, j + 1, categoryInfo.levelInfos[j].question, categoryInfo.levelInfos[j].answer, type);
+    //                levelListObject.gameObject.SetActive(true);
+    //            }
+    //        }
+    //    }
+    //}
+
     public void DisplayLevel()
     {
-        for (int i = 0; i < GuessManager.Instance.CategoryInfos.Count; i++)
+        ////Get information of current category
+        CategoryInfo categoryInfo = GuessManager.Instance.GetCategoryInfo(activeCategoryName);
+
+        levelItemObjectPool.ReturnAllObjectsToPool();
+
+        bool completed = true;
+        for (int i = 0; i < categoryInfo.levelInfos.Count; i++)
         {
-            CategoryInfo categoryInfo = GuessManager.Instance.CategoryInfos[i];
-            if (activeCategoryName == categoryInfo.name)
+            LevelListItem.Type type = completed ? LevelListItem.Type.Completed : LevelListItem.Type.Locked;
+            if (completed && !GuessGameplay.Instance.IsLevelCompleted(categoryInfo.name, i + 1))
             {
-                for (int j = 0; j < categoryInfo.levelInfos.Count; j++)
-                {
-                    levelListObject = Instantiate(levelListPrefab, levelListContainer);
-                    LevelListItem levelListItem = levelListObject.GetComponent<LevelListItem>();
-                    levelListItem.levelQuestion = categoryInfo.levelInfos[j].question;
-                    levelListItem.levelAnswer = categoryInfo.levelInfos[j].answer;
-                    levelListItem.levelName = categoryInfo.levelInfos[j].name;
-                    levelListItem.levelIndex = j + 1;
-                    if (j + 1 <= numberOfAvailableLevel)
-                    {
-                        if (GuessGameplay.Instance.IsLevelCompleted(j + 1))
-                        {
-                            levelListItem.type = LevelListItem.Type.Completed;
-                        }
-                        else if (!GuessGameplay.Instance.IsLevelCompleted(j + 1))
-                        {
-                            levelListItem.type = LevelListItem.Type.Normal;
-                        }
-                    }
-                    else if (j + 1 > numberOfAvailableLevel)
-                    {
-                        levelListItem.type = LevelListItem.Type.Locked;
-                    }
-                    levelListItem.Setup(levelListItem.type);
-                }
+                completed = false;
+                type = LevelListItem.Type.Normal;
             }
+
+            //LevelListItem.Type type;
+            //type = LevelListItem.Type.Normal;
+
+            LevelListItem levelListItem = levelListContainer.GetChild(i).transform.gameObject.GetComponent<LevelListItem>();
+
+            levelListItem.Setup(categoryInfo, i + 1, type, categoryInfo.levelInfos[i].answer, categoryInfo.levelInfos[i].question);
+            levelListItem.gameObject.SetActive(true);
         }
     }
     
@@ -74,16 +92,7 @@ public class UILevel : MonoBehaviour
         rectTransform.offsetMax = new Vector2(-900, 0);
         foreach (Transform childObject in levelListContainer)
         {
-            Destroy(childObject.gameObject);
+            childObject.gameObject.SetActive(false);
         }
-    }
-
-    public int CountAvailableLevel()
-    {
-        if (GuessGameplay.Instance.CheckWinCondition())
-        {
-            numberOfAvailableLevel += 1;
-        }
-        return numberOfAvailableLevel;
     }
 }

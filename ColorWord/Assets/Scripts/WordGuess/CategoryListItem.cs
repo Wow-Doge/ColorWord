@@ -10,10 +10,10 @@ public class CategoryListItem : MonoBehaviour
     TextMeshProUGUI categoryText;
     public string categoryName;
 
-
+    public int numOfActiveLevel;
     private void Awake()
     {
-        
+        numOfActiveLevel = 1;
     }
     void Start()
     {
@@ -22,7 +22,6 @@ public class CategoryListItem : MonoBehaviour
 
     public void Setup(CategoryInfo categoryInfo)
     {
-
         categoryText = gameObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>();
         categoryName = categoryInfo.name;
         categoryText.text = categoryName;
@@ -44,5 +43,14 @@ public class CategoryListItem : MonoBehaviour
         uILevel.activeCategoryName = categoryName;
         uILevel.DisplayLevel();
         GuessGameplay.Instance.activeCategoryInfo = categoryName;
+    }
+
+    public int CountActiveLevel(string categoryName)
+    {
+        if (this.categoryName == categoryName)
+        {
+            numOfActiveLevel++;
+        }
+        return numOfActiveLevel;
     }
 }

@@ -25,7 +25,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     public string activeCategoryInfo;
     public int activeLevelIndex;
-  
+
+    public GameObject currentLevelObject;
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
@@ -95,7 +96,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             if (answer[i] == letter)
             {
                 userInputArray[i] = letter;
-                TextMeshProUGUI text = answerField.GetChild(i).gameObject.transform.GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI text = answerField.GetChild(i).gameObject.transform.GetChild(0).transform.gameObject.GetComponent<TextMeshProUGUI>();
                 text.text = letter.ToString();
             }
         }
@@ -120,13 +121,13 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         uILevel.ShowLevel();
-        uILevel.CountAvailableLevel();
+        uILevel.DisplayLevel();
         guessGameplay.SetActive(false);
     }
 
-    public bool IsLevelCompleted(int levelIndex)
+    public bool IsLevelCompleted(string categoryName, int levelIndex)
     {
-        if (levelIndex == activeLevelIndex)
+        if (categoryName == activeCategoryInfo && levelIndex == activeLevelIndex)
         {
             return true;
         }
@@ -134,5 +135,14 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         {
             return false;
         }
+    }
+
+    public void StartLevel(string answer, string levelQuestion, int levelIndex)
+    {
+        this.answer = answer;
+        questionField.transform.gameObject.GetComponent<TextMeshProUGUI>().text = levelQuestion;
+        this.activeLevelIndex = levelIndex;
+        CreateAnswerField();
+        currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "Level " + levelIndex.ToString();
     }
 }

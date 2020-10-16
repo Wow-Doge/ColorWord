@@ -21,6 +21,8 @@ using UnityEngine;
     }
 public class GuessManager : SingletonComponent<GuessManager>
 {
+
+
     [SerializeField]
     private List<CategoryInfo> categoryInfos;
 
