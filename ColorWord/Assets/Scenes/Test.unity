@@ -7230,6 +7230,7 @@ MonoBehaviour:
   activeCategoryInfo: 
   activeLevelIndex: 0
   currentLevelObject: {fileID: 404828288}
+  categoryList: {fileID: 344307287}
 --- !u!4 &1282772406
 Transform:
   m_ObjectHideFlags: 0

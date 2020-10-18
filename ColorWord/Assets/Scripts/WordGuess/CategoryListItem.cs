@@ -14,7 +14,7 @@ public class CategoryListItem : MonoBehaviour
 
     private void Awake()
     {
-        numOfActiveLevel = 1;
+        numOfActiveLevel = 0;
     }
     void Start()
     {
