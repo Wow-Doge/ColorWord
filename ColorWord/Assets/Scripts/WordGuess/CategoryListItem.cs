@@ -11,6 +11,7 @@ public class CategoryListItem : MonoBehaviour
     public string categoryName;
 
     public int numOfActiveLevel;
+
     private void Awake()
     {
         numOfActiveLevel = 1;
@@ -40,17 +41,10 @@ public class CategoryListItem : MonoBehaviour
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         uILevel.ShowLevel();
-        uILevel.activeCategoryName = categoryName;
+        uILevel.SetupCategoryListItem(categoryName, numOfActiveLevel);
+        //uILevel.activeCategoryName = categoryName;
+        //uILevel.numbersOfActiveLevel = numOfActiveLevel;
         uILevel.DisplayLevel();
         GuessGameplay.Instance.activeCategoryInfo = categoryName;
-    }
-
-    public int CountActiveLevel(string categoryName)
-    {
-        if (this.categoryName == categoryName)
-        {
-            numOfActiveLevel++;
-        }
-        return numOfActiveLevel;
     }
 }

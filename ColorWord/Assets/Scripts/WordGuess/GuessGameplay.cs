@@ -120,22 +120,23 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     public void ReturnToUILevel()
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
+        uILevel.numbersOfActiveLevel++;
         uILevel.ShowLevel();
         uILevel.DisplayLevel();
         guessGameplay.SetActive(false);
     }
 
-    public bool IsLevelCompleted(string categoryName, int levelIndex)
-    {
-        if (categoryName == activeCategoryInfo && levelIndex == activeLevelIndex)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+    //public bool IsLevelCompleted(string categoryName, int levelIndex)
+    //{
+    //    if (categoryName == activeCategoryInfo && levelIndex == activeLevelIndex)
+    //    {
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        return false;
+    //    }
+    //}
 
     public void StartLevel(string answer, string levelQuestion, int levelIndex)
     {

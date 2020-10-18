@@ -51,6 +51,12 @@ public class UILevel : MonoBehaviour
     //    }
     //}
 
+    public void SetupCategoryListItem(string categoryName, int activeLevelNumber)
+    {
+        this.activeCategoryName = categoryName;
+        this.numbersOfActiveLevel = activeLevelNumber;
+    }
+
     public void DisplayLevel()
     {
         ////Get information of current category
@@ -58,15 +64,35 @@ public class UILevel : MonoBehaviour
 
         levelItemObjectPool.ReturnAllObjectsToPool();
 
-        bool completed = true;
+
+        //public int GetActiveLevel(int activeLevelNumber)
+        //{
+        //    numOfActiveLevel = activeLevelNumber;
+        //    return activeLevelNumber;
+        //}
+
+        //bool completed = true;
         for (int i = 0; i < categoryInfo.levelInfos.Count; i++)
         {
-            LevelListItem.Type type = completed ? LevelListItem.Type.Completed : LevelListItem.Type.Locked;
-            if (completed && !GuessGameplay.Instance.IsLevelCompleted(categoryInfo.name, i + 1))
+            LevelListItem.Type type;    
+            if (i < numbersOfActiveLevel)
             {
-                completed = false;
+                type = LevelListItem.Type.Completed;
+            }
+            else if (i == numbersOfActiveLevel)
+            {
                 type = LevelListItem.Type.Normal;
             }
+            else
+            {
+                type = LevelListItem.Type.Locked;
+            }
+            //LevelListItem.Type type = completed ? LevelListItem.Type.Completed : LevelListItem.Type.Locked;
+            //if (completed && !GuessGameplay.Instance.IsLevelCompleted(categoryInfo.name, i + 1))
+            //{
+            //    completed = false;
+            //    type = LevelListItem.Type.Normal;
+            //}
 
             //LevelListItem.Type type;
             //type = LevelListItem.Type.Normal;
@@ -78,6 +104,7 @@ public class UILevel : MonoBehaviour
         }
     }
     
+
     public void ShowLevel()
     {
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();

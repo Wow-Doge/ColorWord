@@ -26,6 +26,7 @@ public class GuessManager : SingletonComponent<GuessManager>
     [SerializeField]
     private List<CategoryInfo> categoryInfos;
 
+
     public void GetCategoryInfos(GameObject categoryPrefab, Transform categoryListContainer)
     {
         for (int i = 0; i < categoryInfos.Count; i++)
