@@ -29,9 +29,20 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     public GameObject currentLevelObject;
 
     public GameObject categoryList;
+
+    public GameObject coinField;
+    TextMeshProUGUI coinText;
+    private int coinNumber;
+
+    public GameObject errorField;
+    TextMeshProUGUI errorText;
+    private int curErrorNumber;
+    private int totalErrorNumber;
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
+        coinText = coinField.gameObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>();
+        errorText = errorField.transform.GetComponent<TextMeshProUGUI>();
     }
 
     void Update()
@@ -83,6 +94,9 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         {
             Debug.Log("wrong letter");
             //Punish player when they press wrong letter button;
+            curErrorNumber++;
+            errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
+
         }
     }
 
@@ -116,6 +130,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         uICompleteScreen.SetActive(true);
         yield return new WaitForSeconds(1f);
         uICompleteScreen.SetActive(false);
+        LevelComplete();
         ReturnToUILevel();
     }
     public void GetCategoryLevelNumber()
@@ -130,6 +145,12 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         }
     }    
 
+    public void LevelComplete()
+    {
+        coinNumber += 25;
+        coinText.text = coinNumber.ToString();
+    }
+
     public void ReturnToUILevel()
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
@@ -140,25 +161,34 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         guessGameplay.SetActive(false);
     }
 
-
-    //public bool IsLevelCompleted(string categoryName, int levelIndex)
-    //{
-    //    if (categoryName == activeCategoryInfo && levelIndex == activeLevelIndex)
-    //    {
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        return false;
-    //    }
-    //}
+    public void GetError()
+    {
+        curErrorNumber = 0;
+        totalErrorNumber = 5;
+        errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
+    }
 
     public void StartLevel(string answer, string levelQuestion, int levelIndex)
     {
+        //curErrorNumber = 0;
+        //totalErrorNumber = 5;
+        //errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
+
         this.answer = answer;
         questionField.transform.gameObject.GetComponent<TextMeshProUGUI>().text = levelQuestion;
         this.activeLevelIndex = levelIndex;
         CreateAnswerField();
         currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "Level " + levelIndex.ToString();
+
+        GetError();
+        //function down there is the problem
+        //GetMistake();
     }
+
+    //public void GetMistake()
+    //{
+    //    curErrorNumber = 0;
+    //    totalErrorNumber = 5;
+    //    errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
+    //}
 }
