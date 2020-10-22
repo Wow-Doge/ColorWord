@@ -6,10 +6,6 @@ using UnityEngine;
 
 public class LevelListItem : MonoBehaviour
 {
-    //[SerializeField]
-    //private string levelName;
-    //[SerializeField]
-    //private int levelIndex;
     [SerializeField]
     private string levelQuestion;
     [SerializeField]
@@ -37,19 +33,6 @@ public class LevelListItem : MonoBehaviour
         levelNameText = gameObject.GetComponentInChildren<TextMeshProUGUI>();
         levelNameText.text = levelIndex.ToString();
     }
-
-    //public void Setup(string levelName, int levelIndex, string levelQuestion, string levelAnswer,Type type)
-    //{
-    //    this.type = type;
-    //    this.levelName = levelName;
-    //    this.levelIndex = levelIndex;
-    //    this.levelQuestion = levelQuestion;
-    //    this.levelAnswer = levelAnswer;
-
-    //    completedLevelImage.gameObject.SetActive(type == Type.Completed);
-    //    lockedLevelImage.gameObject.SetActive(type == Type.Locked);
-    //}
-
     public void Setup(CategoryInfo categoryInfo, int levelIndex, Type type, string levelAnswer, string levelQuestion)
     {
         this.categoryName = categoryInfo.name;
@@ -69,10 +52,6 @@ public class LevelListItem : MonoBehaviour
             GameObject canvas = GameObject.Find("Canvas");
             GameObject guessGameplayObject = canvas.gameObject.transform.GetChild(4).gameObject;
             guessGameplayObject.SetActive(true);
-            //GuessGameplay.Instance.answer = levelAnswer.ToUpper();
-            //GuessGameplay.Instance.CreateAnswerField();
-            //GuessGameplay.Instance.questionField.gameObject.transform.GetComponent<TextMeshProUGUI>().text = levelQuestion;
-            //GuessGameplay.Instance.activeLevelIndex = levelIndex;
             GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex);
         }
 

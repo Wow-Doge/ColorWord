@@ -64,14 +64,6 @@ public class UILevel : MonoBehaviour
 
         levelItemObjectPool.ReturnAllObjectsToPool();
 
-
-        //public int GetActiveLevel(int activeLevelNumber)
-        //{
-        //    numOfActiveLevel = activeLevelNumber;
-        //    return activeLevelNumber;
-        //}
-
-        //bool completed = true;
         for (int i = 0; i < categoryInfo.levelInfos.Count; i++)
         {
             LevelListItem.Type type;    

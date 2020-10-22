@@ -15,6 +15,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     public GameObject questionField;
 
     public GameObject uICompleteScreen;
+    public GameObject uIFailScreen;
+
     public string answer;
 
     private const char placeholder = '_';
@@ -45,11 +47,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         errorText = errorField.transform.GetComponent<TextMeshProUGUI>();
     }
 
-    void Update()
-    {
-        
-    }
-
     public void DisplayGame()
     {
         guessGameplay.SetActive(true);
@@ -70,7 +67,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         {
             sb.Append(placeholder);
             userInput = sb.ToString();
-            Instantiate(letterPrefab, new Vector3(1f * i - 1f, answerField.position.y, answerField.position.z), Quaternion.identity, answerField);
+            Instantiate(letterPrefab, new Vector3(1f * i - 3f, answerField.position.y, answerField.position.z), Quaternion.identity, answerField);
             TextMeshProUGUI textLetter = answerField.GetComponentInChildren<TextMeshProUGUI>();
             textLetter.text = placeholder.ToString();
         }
@@ -96,7 +93,36 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             //Punish player when they press wrong letter button;
             curErrorNumber++;
             errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
+            if (curErrorNumber >= totalErrorNumber)
+            {
+                StopCoroutine(ShowFailScreen());
+                Debug.Log("Failed");
+                StartCoroutine(ShowFailScreen());
+            }
+        }
+    }
 
+
+    public void GetHint()
+    {
+        StringBuilder sb = new StringBuilder();
+        char[] firstArray = answer.ToCharArray();
+        char[] secondArray = userInput.ToCharArray();
+
+        var differentChars = firstArray.Except(secondArray);
+        foreach (char c in differentChars)
+        {
+            sb.Append(c);
+        }
+
+        char ch = sb[UnityEngine.Random.Range(0, sb.Length)];
+        UpdateAnswer(ch);
+        if (CheckWinCondition())
+        {
+            StopCoroutine(ShowCompleteScreen());
+            Debug.Log("Congratulation");
+            StartCoroutine(ShowCompleteScreen());
+            //Do something to congratulate player;
         }
     }
 
@@ -133,6 +159,16 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         LevelComplete();
         ReturnToUILevel();
     }
+
+    IEnumerator ShowFailScreen()
+    {
+        yield return new WaitForSeconds(1f);
+        uIFailScreen.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        uIFailScreen.SetActive(false);
+        ReturnToUILevelFail();
+
+    }
     public void GetCategoryLevelNumber()
     {
         for (int i = 0; i < categoryList.transform.childCount; i++)
@@ -161,6 +197,15 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         guessGameplay.SetActive(false);
     }
 
+    public void ReturnToUILevelFail()
+    {
+        UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
+        GetCategoryLevelNumber();
+        uILevel.ShowLevel();
+        uILevel.DisplayLevel();
+        guessGameplay.SetActive(false);
+    }
+
     public void GetError()
     {
         curErrorNumber = 0;
@@ -170,25 +215,12 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     public void StartLevel(string answer, string levelQuestion, int levelIndex)
     {
-        //curErrorNumber = 0;
-        //totalErrorNumber = 5;
-        //errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
-
         this.answer = answer;
         questionField.transform.gameObject.GetComponent<TextMeshProUGUI>().text = levelQuestion;
         this.activeLevelIndex = levelIndex;
         CreateAnswerField();
         currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "Level " + levelIndex.ToString();
-
         GetError();
-        //function down there is the problem
-        //GetMistake();
     }
 
-    //public void GetMistake()
-    //{
-    //    curErrorNumber = 0;
-    //    totalErrorNumber = 5;
-    //    errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
-    //}
 }
