@@ -34,12 +34,13 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     public GameObject coinField;
     TextMeshProUGUI coinText;
-    private int coinNumber;
+    private int CoinNumber { get; set; } = 0;
 
     public GameObject errorField;
     TextMeshProUGUI errorText;
     private int curErrorNumber;
     private int totalErrorNumber;
+
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
@@ -67,7 +68,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         {
             sb.Append(placeholder);
             userInput = sb.ToString();
-            Instantiate(letterPrefab, new Vector3(1f * i - 3f, answerField.position.y, answerField.position.z), Quaternion.identity, answerField);
+            Instantiate(letterPrefab, new Vector3(answerField.position.x, answerField.position.y, answerField.position.z), Quaternion.identity, answerField);
             TextMeshProUGUI textLetter = answerField.GetComponentInChildren<TextMeshProUGUI>();
             textLetter.text = placeholder.ToString();
         }
@@ -105,24 +106,33 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     public void GetHint()
     {
-        StringBuilder sb = new StringBuilder();
-        char[] firstArray = answer.ToCharArray();
-        char[] secondArray = userInput.ToCharArray();
-
-        var differentChars = firstArray.Except(secondArray);
-        foreach (char c in differentChars)
+        if (CoinNumber >= 5)
         {
-            sb.Append(c);
+            StringBuilder sb = new StringBuilder();
+            char[] firstArray = answer.ToCharArray();
+            char[] secondArray = userInput.ToCharArray();
+
+            var differentChars = firstArray.Except(secondArray);
+            foreach (char c in differentChars)
+            {
+                sb.Append(c);
+            }
+
+            char ch = sb[UnityEngine.Random.Range(0, sb.Length)];
+            UpdateAnswer(ch);
+            if (CheckWinCondition())
+            {
+                StopAllCoroutines();
+                Debug.Log("Congratulation");
+                StartCoroutine(ShowCompleteScreen());
+                //Do something to congratulate player;
+            }
+            CoinChange(-5);
         }
-
-        char ch = sb[UnityEngine.Random.Range(0, sb.Length)];
-        UpdateAnswer(ch);
-        if (CheckWinCondition())
+        else
         {
-            StopCoroutine(ShowCompleteScreen());
-            Debug.Log("Congratulation");
-            StartCoroutine(ShowCompleteScreen());
-            //Do something to congratulate player;
+            Debug.Log("Not enough coin");
+            //Will add some popup later
         }
     }
 
@@ -152,11 +162,11 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     IEnumerator ShowCompleteScreen()
     {
+        CoinChange(25);
         yield return new WaitForSeconds(1f);
         uICompleteScreen.SetActive(true);
         yield return new WaitForSeconds(1f);
         uICompleteScreen.SetActive(false);
-        LevelComplete();
         ReturnToUILevel();
     }
 
@@ -176,15 +186,15 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             CategoryListItem categoryListItem = categoryList.gameObject.transform.GetChild(i).gameObject.transform.GetComponent<CategoryListItem>();
             if (activeCategoryInfo == categoryListItem.categoryName)
             {
-                categoryListItem.numOfActiveLevel++;
+                categoryListItem.NumOfActiveLevel++;
             }
         }
     }    
 
-    public void LevelComplete()
+    public void CoinChange(int num)
     {
-        coinNumber += 25;
-        coinText.text = coinNumber.ToString();
+        CoinNumber += num;
+        coinText.text = CoinNumber.ToString();
     }
 
     public void ReturnToUILevel()
@@ -220,7 +230,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         this.activeLevelIndex = levelIndex;
         CreateAnswerField();
         currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "Level " + levelIndex.ToString();
+        coinText.text = CoinNumber.ToString();
         GetError();
     }
-
 }
