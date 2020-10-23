@@ -41,6 +41,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     private int curErrorNumber;
     private int totalErrorNumber;
 
+    [SerializeField]
+    private LevelListItem.Type type;
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
@@ -162,12 +164,11 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     IEnumerator ShowCompleteScreen()
     {
-        CoinChange(25);
         yield return new WaitForSeconds(1f);
         uICompleteScreen.SetActive(true);
         yield return new WaitForSeconds(1f);
         uICompleteScreen.SetActive(false);
-        ReturnToUILevel();
+        LevelComplete();
     }
 
     IEnumerator ShowFailScreen()
@@ -197,11 +198,19 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         coinText.text = CoinNumber.ToString();
     }
 
-    public void ReturnToUILevel()
+    public void LevelComplete()
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         GetCategoryLevelNumber();
-        uILevel.numbersOfActiveLevel++;
+        if (type == LevelListItem.Type.Normal)
+        {
+            CoinChange(25);
+            uILevel.numbersOfActiveLevel++;
+        }
+        else
+        {
+            //Do nothing
+        }
         uILevel.ShowLevel();
         uILevel.DisplayLevel();
         guessGameplay.SetActive(false);
@@ -223,11 +232,12 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
     }
 
-    public void StartLevel(string answer, string levelQuestion, int levelIndex)
+    public void StartLevel(string answer, string levelQuestion, int levelIndex, LevelListItem.Type type)
     {
         this.answer = answer;
         questionField.transform.gameObject.GetComponent<TextMeshProUGUI>().text = levelQuestion;
         this.activeLevelIndex = levelIndex;
+        this.type = type;
         CreateAnswerField();
         currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "Level " + levelIndex.ToString();
         coinText.text = CoinNumber.ToString();

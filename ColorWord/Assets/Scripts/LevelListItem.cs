@@ -52,7 +52,7 @@ public class LevelListItem : MonoBehaviour
             GameObject canvas = GameObject.Find("Canvas");
             GameObject guessGameplayObject = canvas.gameObject.transform.GetChild(4).gameObject;
             guessGameplayObject.SetActive(true);
-            GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex);
+            GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex, type);
         }
 
     }
