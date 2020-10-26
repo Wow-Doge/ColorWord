@@ -23,33 +23,7 @@ public class UILevel : MonoBehaviour
     {
         levelItemObjectPool = new ObjectPool(levelListPrefab, 10, levelListContainer);
     }
-    //public void DisplayLevel()
-    //{
-    //    for (int i = 0; i < GuessManager.Instance.CategoryInfos.Count; i++)
-    //    {
-    //        CategoryInfo categoryInfo = GuessManager.Instance.CategoryInfos[i];
-    //        if (activeCategoryName == categoryInfo.name)
-    //        {
-    //            for (int j = 0; j < categoryInfo.levelInfos.Count; j++)
-    //            {
-    //                levelListObject = Instantiate(levelListPrefab, levelListContainer);
-    //                LevelListItem levelListItem = levelListObject.GetComponent<LevelListItem>();
 
-    //                LevelListItem.Type type;
-    //                if (GuessGameplay.Instance.IsLevelCompleted(activeCategoryName, j + 1))
-    //                {
-    //                    type = LevelListItem.Type.Completed;
-    //                }
-    //                else
-    //                {
-    //                    type = LevelListItem.Type.Normal;
-    //                }
-    //                levelListItem.Setup(categoryInfo.levelInfos[j].name, j + 1, categoryInfo.levelInfos[j].question, categoryInfo.levelInfos[j].answer, type);
-    //                levelListObject.gameObject.SetActive(true);
-    //            }
-    //        }
-    //    }
-    //}
 
     public void SetupCategoryListItem(string categoryName, int activeLevelNumber)
     {
@@ -79,16 +53,6 @@ public class UILevel : MonoBehaviour
             {
                 type = LevelListItem.Type.Locked;
             }
-            //LevelListItem.Type type = completed ? LevelListItem.Type.Completed : LevelListItem.Type.Locked;
-            //if (completed && !GuessGameplay.Instance.IsLevelCompleted(categoryInfo.name, i + 1))
-            //{
-            //    completed = false;
-            //    type = LevelListItem.Type.Normal;
-            //}
-
-            //LevelListItem.Type type;
-            //type = LevelListItem.Type.Normal;
-
             LevelListItem levelListItem = levelListContainer.GetChild(i).transform.gameObject.GetComponent<LevelListItem>();
 
             levelListItem.Setup(categoryInfo, i + 1, type, categoryInfo.levelInfos[i].answer, categoryInfo.levelInfos[i].question);
