@@ -15,12 +15,6 @@ public class UICategory : MonoBehaviour
     {
         GuessManager.Instance.GetCategoryInfos(categoryListPrefab, categoryListContainer);
         DisplayCategory();
-        //gonna fix it later
-    }
-
-    void Update()
-    {
-        
     }
 
     public void DisplayUICategory()
@@ -60,10 +54,5 @@ public class UICategory : MonoBehaviour
     public void EnableStartMenu()
     {
         startMenu.SetActive(true);
-    }
-
-    public void StartUICategory()
-    {
-        
     }
 }

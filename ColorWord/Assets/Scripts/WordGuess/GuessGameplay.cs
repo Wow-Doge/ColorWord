@@ -6,7 +6,20 @@ using UnityEngine;
 using System.Text;
 using UnityEngine.UI;
 using System;
+using System.IO;
 
+//[System.Serializable]
+//public class DataPlayer
+//{
+//    public string categoryName;
+//    public int completedLevel;
+
+//    public DataPlayer(CategoryListItem categoryListItem)
+//    {
+//        categoryName = categoryListItem.categoryName;
+//        completedLevel = categoryListItem.NumOfActiveLevel;
+//    }
+//}
 public class GuessGameplay : SingletonComponent<GuessGameplay>
 {
     public GameObject guessGameplay;
@@ -34,7 +47,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     public GameObject coinField;
     TextMeshProUGUI coinText;
-    private int CoinNumber { get; set; } = 0;
+    public int CoinNumber { get; set; } = 0;
 
     public GameObject errorField;
     TextMeshProUGUI errorText;
@@ -85,7 +98,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             if (CheckWinCondition())
             {
                 StopCoroutine(ShowCompleteScreen());
-                Debug.Log("Congratulation");
                 StartCoroutine(ShowCompleteScreen());
                 //Do something to congratulate player;
             }
@@ -125,7 +137,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             if (CheckWinCondition())
             {
                 StopAllCoroutines();
-                Debug.Log("Congratulation");
                 StartCoroutine(ShowCompleteScreen());
                 //Do something to congratulate player;
             }
@@ -202,6 +213,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         GetCategoryLevelNumber();
+        GetDataList();
+        Save();
         if (type == LevelListItem.Type.Normal)
         {
             CoinChange(25);
@@ -242,4 +255,75 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         coinText.text = CoinNumber.ToString();
         GetError();
     }
+
+    public List<PlayerData> playerDataList = new List<PlayerData>();
+
+    public void CheckNum()
+    {
+        Debug.Log(playerDataList.Count);
+    }
+
+    public void GetDataList()
+    {
+        for (int i = 0; i < categoryList.gameObject.transform.childCount; i++)
+        {
+            CategoryListItem categoryListItem = categoryList.gameObject.transform.GetChild(i).gameObject.transform.GetComponent<CategoryListItem>();
+            //if (playerDataList.Count > 0)
+            //{
+            //    foreach (var data in playerDataList.ToList())
+            //    {
+            //        //fix this shit
+            //        if (data.categoryName == categoryListItem.categoryName)
+            //        {
+            //            data.completedLevel = categoryListItem.NumOfActiveLevel;
+            //        }
+            //    }
+            //}
+            //else if (playerDataList.Count == 0)
+            //{
+            //    playerDataList.Add(new PlayerData(categoryListItem));
+            //}
+            //else
+            //{
+            //    Debug.Log("Error");
+            //}
+            if (playerDataList.Count == 0)
+            {
+                playerDataList.Add(new PlayerData(categoryListItem));
+            }
+            if (playerDataList.Count > 0)
+            {
+                //Check all categoryName in playerDataList
+                if (playerDataList.Any(category => category.categoryName == categoryListItem.categoryName))
+                {
+                    //get level number
+                    foreach (var data in playerDataList)
+                    {
+                        if (data.categoryName == categoryListItem.categoryName)
+                        {
+                            data.completedLevel = categoryListItem.NumOfActiveLevel;
+                        }
+                    }
+                }
+                else if (playerDataList.Any(category => category.categoryName != categoryListItem.categoryName))
+                {
+                    playerDataList.Add(new PlayerData(categoryListItem));
+                }
+            }
+        }
+    }
+    public void Save()
+    {
+        DataList dataList = new DataList();
+        Debug.Log(JsonUtility.ToJson(dataList));
+        string path = Application.dataPath + "/text.txt";
+        File.WriteAllText(path, JsonUtility.ToJson(dataList));
+    }
 }
+[System.Serializable]
+public class DataList
+{
+    public List<PlayerData> playerDatas = GuessGameplay.Instance.playerDataList;
+}
+
+

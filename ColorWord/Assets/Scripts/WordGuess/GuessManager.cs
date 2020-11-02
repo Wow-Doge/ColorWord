@@ -19,13 +19,11 @@ using UnityEngine;
         public string question;
         public string answer;
     }
+
 public class GuessManager : SingletonComponent<GuessManager>
 {
-
-
     [SerializeField]
     private List<CategoryInfo> categoryInfos;
-
 
     public void GetCategoryInfos(GameObject categoryPrefab, Transform categoryListContainer)
     {
@@ -54,6 +52,4 @@ public class GuessManager : SingletonComponent<GuessManager>
         }
         return null;
     }
-
-
 }
