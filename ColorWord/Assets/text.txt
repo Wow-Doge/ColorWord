@@ -1,1 +1,1 @@
-{"playerDatas":[{"categoryName":"Sports","completedLevel":2},{"categoryName":"Animals","completedLevel":1},{"categoryName":"Cars","completedLevel":0},{"categoryName":"Trees","completedLevel":1},{"categoryName":"Computers","completedLevel":0}]}
+{"playerDatas":[{"categoryName":"Sports","completedLevel":1},{"categoryName":"Animals","completedLevel":0},{"categoryName":"Cars","completedLevel":0},{"categoryName":"Trees","completedLevel":0},{"categoryName":"Computers","completedLevel":0}]}

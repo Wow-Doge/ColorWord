@@ -11,6 +11,7 @@ public class UICategory : MonoBehaviour
 
     public GameObject uICategoryTopBar;
     public GameObject startMenu;
+
     void Start()
     {
         GuessManager.Instance.GetCategoryInfos(categoryListPrefab, categoryListContainer);

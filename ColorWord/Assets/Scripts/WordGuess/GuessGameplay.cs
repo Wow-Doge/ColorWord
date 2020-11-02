@@ -8,18 +8,6 @@ using UnityEngine.UI;
 using System;
 using System.IO;
 
-//[System.Serializable]
-//public class DataPlayer
-//{
-//    public string categoryName;
-//    public int completedLevel;
-
-//    public DataPlayer(CategoryListItem categoryListItem)
-//    {
-//        categoryName = categoryListItem.categoryName;
-//        completedLevel = categoryListItem.NumOfActiveLevel;
-//    }
-//}
 public class GuessGameplay : SingletonComponent<GuessGameplay>
 {
     public GameObject guessGameplay;
@@ -268,25 +256,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         for (int i = 0; i < categoryList.gameObject.transform.childCount; i++)
         {
             CategoryListItem categoryListItem = categoryList.gameObject.transform.GetChild(i).gameObject.transform.GetComponent<CategoryListItem>();
-            //if (playerDataList.Count > 0)
-            //{
-            //    foreach (var data in playerDataList.ToList())
-            //    {
-            //        //fix this shit
-            //        if (data.categoryName == categoryListItem.categoryName)
-            //        {
-            //            data.completedLevel = categoryListItem.NumOfActiveLevel;
-            //        }
-            //    }
-            //}
-            //else if (playerDataList.Count == 0)
-            //{
-            //    playerDataList.Add(new PlayerData(categoryListItem));
-            //}
-            //else
-            //{
-            //    Debug.Log("Error");
-            //}
             if (playerDataList.Count == 0)
             {
                 playerDataList.Add(new PlayerData(categoryListItem));
@@ -296,7 +265,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
                 //Check all categoryName in playerDataList
                 if (playerDataList.Any(category => category.categoryName == categoryListItem.categoryName))
                 {
-                    //get level number
+                    //get numbers of completed level
                     foreach (var data in playerDataList)
                     {
                         if (data.categoryName == categoryListItem.categoryName)
@@ -318,6 +287,28 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         Debug.Log(JsonUtility.ToJson(dataList));
         string path = Application.dataPath + "/text.txt";
         File.WriteAllText(path, JsonUtility.ToJson(dataList));
+    }
+
+    public void Load()
+    {
+        if (File.Exists(Application.dataPath + "/text.txt"))
+        {
+            string loadPath = File.ReadAllText(Application.dataPath + "/text.txt");
+            DataList dataList = JsonUtility.FromJson<DataList>(loadPath);
+
+            //Testing load system: OK
+            for (int i = 0; i < categoryList.gameObject.transform.childCount; i++)
+            {
+                CategoryListItem categoryListItem = categoryList.gameObject.transform.GetChild(i).gameObject.transform.GetComponent<CategoryListItem>();
+                foreach (var data in dataList.playerDatas)
+                {
+                    if (data.categoryName == categoryListItem.categoryName)
+                    {
+                        categoryListItem.NumOfActiveLevel = data.completedLevel;
+                    }
+                }
+            }
+        }
     }
 }
 [System.Serializable]
