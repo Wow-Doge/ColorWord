@@ -15,6 +15,9 @@ public class UICategory : MonoBehaviour
     void Start()
     {
         GuessManager.Instance.GetCategoryInfos(categoryListPrefab, categoryListContainer);
+    }
+    private void Update()
+    {
         DisplayCategory();
     }
 

@@ -20,7 +20,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     public string answer;
 
-    private const char placeholder = '_';
+    private const char placeholder = ' ';
 
     private string userInput;
 
@@ -44,10 +44,14 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     [SerializeField]
     private LevelListItem.Type type;
+
+    public List<PlayerData> playerDataList = new List<PlayerData>();
+
+    public GameObject congratulationText;
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
-        coinText = coinField.gameObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>();
+        coinText = coinField.gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>();
         errorText = errorField.transform.GetComponent<TextMeshProUGUI>();
     }
 
@@ -83,11 +87,14 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         if (answer.Contains(letter))
         {
             UpdateAnswer(letter);
+            StopCoroutine(ShowTextWhenCorrect());
+            StartCoroutine(ShowTextWhenCorrect());
+            //if winning
             if (CheckWinCondition())
             {
-                StopCoroutine(ShowCompleteScreen());
-                StartCoroutine(ShowCompleteScreen());
-                //Do something to congratulate player;
+                ShowCompleteScreen();
+                //StopCoroutine(ShowCompleteScreen());
+                //StartCoroutine(ShowCompleteScreen());
             }
         }
         else
@@ -98,9 +105,11 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             errorText.text = "Error: " + curErrorNumber + " / " + totalErrorNumber;
             if (curErrorNumber >= totalErrorNumber)
             {
-                StopCoroutine(ShowFailScreen());
-                Debug.Log("Failed");
-                StartCoroutine(ShowFailScreen());
+                ShowFailScreen();
+
+                //StopCoroutine(ShowFailScreen());
+                //Debug.Log("Failed");
+                //StartCoroutine(ShowFailScreen());
             }
         }
     }
@@ -124,8 +133,9 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             UpdateAnswer(ch);
             if (CheckWinCondition())
             {
-                StopAllCoroutines();
-                StartCoroutine(ShowCompleteScreen());
+                ShowCompleteScreen();
+                //StopAllCoroutines();
+                //StartCoroutine(ShowCompleteScreen());
                 //Do something to congratulate player;
             }
             CoinChange(-5);
@@ -161,23 +171,48 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         return answer.Equals(userInput);
     }
 
-    IEnumerator ShowCompleteScreen()
+    public void ShowCompleteScreen()
     {
-        yield return new WaitForSeconds(1f);
         uICompleteScreen.SetActive(true);
-        yield return new WaitForSeconds(1f);
-        uICompleteScreen.SetActive(false);
         LevelComplete();
     }
+    //IEnumerator ShowCompleteScreen()
+    //{
+    //    yield return new WaitForSeconds(1f);
+    //    uICompleteScreen.SetActive(true);
+    //    yield return new WaitForSeconds(1f);
+    //    uICompleteScreen.SetActive(false);
+    //    LevelComplete();
+    //}
 
-    IEnumerator ShowFailScreen()
+    public void ShowFailScreen()
     {
-        yield return new WaitForSeconds(1f);
         uIFailScreen.SetActive(true);
-        yield return new WaitForSeconds(1f);
-        uIFailScreen.SetActive(false);
         ReturnToUILevelFail();
+    }
+    //IEnumerator ShowFailScreen()
+    //{
+    //    yield return new WaitForSeconds(1f);
+    //    uIFailScreen.SetActive(true);
+    //    yield return new WaitForSeconds(1f);
+    //    uIFailScreen.SetActive(false);
+    //    ReturnToUILevelFail();
+    //}
+    IEnumerator ShowTextWhenCorrect()
+    {
+        congratulationText.SetActive(true);
+        yield return new WaitForSeconds(1f);
+        congratulationText.SetActive(false);
+    }
 
+    public void CloseCompleteScreen()
+    {
+        uICompleteScreen.SetActive(false);
+    }
+
+    public void CloseFailScreen()
+    {
+        uIFailScreen.SetActive(false);
     }
     public void GetCategoryLevelNumber()
     {
@@ -186,7 +221,10 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             CategoryListItem categoryListItem = categoryList.gameObject.transform.GetChild(i).gameObject.transform.GetComponent<CategoryListItem>();
             if (activeCategoryInfo == categoryListItem.categoryName)
             {
-                categoryListItem.NumOfActiveLevel++;
+                if (type == LevelListItem.Type.Normal)
+                {
+                    categoryListItem.NumOfActiveLevel++;
+                }
             }
         }
     }    
@@ -200,18 +238,15 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     public void LevelComplete()
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
-        GetCategoryLevelNumber();
-        GetDataList();
-        Save();
         if (type == LevelListItem.Type.Normal)
         {
             CoinChange(25);
             uILevel.numbersOfActiveLevel++;
         }
-        else
-        {
-            //Do nothing
-        }
+        GetCategoryLevelNumber();
+        GetDataList();
+        Save();
+
         uILevel.ShowLevel();
         uILevel.DisplayLevel();
         guessGameplay.SetActive(false);
@@ -239,16 +274,15 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         this.activeLevelIndex = levelIndex;
         this.type = type;
         CreateAnswerField();
-        currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "Level " + levelIndex.ToString();
+        currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "LEVEL " + levelIndex.ToString();
         coinText.text = CoinNumber.ToString();
         GetError();
     }
 
-    public List<PlayerData> playerDataList = new List<PlayerData>();
 
-    public void CheckNum()
+    public void ResetGameplay()
     {
-        Debug.Log(playerDataList.Count);
+        File.Delete(Application.dataPath + "/text.txt");
     }
 
     public void GetDataList()
@@ -296,7 +330,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             string loadPath = File.ReadAllText(Application.dataPath + "/text.txt");
             DataList dataList = JsonUtility.FromJson<DataList>(loadPath);
 
-            //Testing load system: OK
             for (int i = 0; i < categoryList.gameObject.transform.childCount; i++)
             {
                 CategoryListItem categoryListItem = categoryList.gameObject.transform.GetChild(i).gameObject.transform.GetComponent<CategoryListItem>();
@@ -308,6 +341,11 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
                     }
                 }
             }
+            CoinNumber = dataList.coins;
+        }
+        else
+        {
+            //Create a text file and add path
         }
     }
 }
@@ -315,6 +353,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 public class DataList
 {
     public List<PlayerData> playerDatas = GuessGameplay.Instance.playerDataList;
+    public int coins = GuessGameplay.Instance.CoinNumber;
 }
 
 

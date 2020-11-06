@@ -5,7 +5,7 @@ using UnityEngine;
 public class UIMainMenu : MonoBehaviour
 {
     public GameObject startMenu;
-    public void StartButton()
+    public void PlayButton()
     {
         startMenu.SetActive(true);
         gameObject.SetActive(false);

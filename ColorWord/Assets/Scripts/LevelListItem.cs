@@ -54,7 +54,6 @@ public class LevelListItem : MonoBehaviour
             guessGameplayObject.SetActive(true);
             GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex, type);
         }
-
     }
 
     public void HideUILevel()
