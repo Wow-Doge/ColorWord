@@ -24,7 +24,6 @@ public class UILevel : MonoBehaviour
         levelItemObjectPool = new ObjectPool(levelListPrefab, 10, levelListContainer);
     }
 
-
     public void SetupCategoryListItem(string categoryName, int activeLevelNumber)
     {
         this.activeCategoryName = categoryName;
@@ -60,7 +59,6 @@ public class UILevel : MonoBehaviour
         }
     }
     
-
     public void ShowLevel()
     {
         RectTransform rectTransform = gameObject.GetComponent<RectTransform>();

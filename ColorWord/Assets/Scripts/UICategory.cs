@@ -50,10 +50,10 @@ public class UICategory : MonoBehaviour
         rectTransform.offsetMax = new Vector2(0, 0);
     }
 
-    public void DisableCategory()
-    {
-        gameObject.SetActive(false);
-    }
+    //public void DisableCategory()
+    //{
+    //    gameObject.SetActive(false);
+    //}
 
     public void EnableStartMenu()
     {
