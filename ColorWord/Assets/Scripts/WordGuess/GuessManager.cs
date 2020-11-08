@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-    [System.Serializable]
+[System.Serializable]
     public class CategoryInfo
     {
         public string name;
@@ -18,6 +19,9 @@ using UnityEngine;
         public string name;
         public string question;
         public string answer;
+        public Sprite sprite;
+        [TextArea]
+        public string description;
     }
 
 public class GuessManager : SingletonComponent<GuessManager>
