@@ -54,7 +54,7 @@ public class UILevel : MonoBehaviour
             }
             LevelListItem levelListItem = levelListContainer.GetChild(i).transform.gameObject.GetComponent<LevelListItem>();
 
-            levelListItem.Setup(categoryInfo, i + 1, type, categoryInfo.levelInfos[i].answer, categoryInfo.levelInfos[i].question);
+            levelListItem.Setup(categoryInfo, i + 1, type, categoryInfo.levelInfos[i].answer, categoryInfo.levelInfos[i].question, categoryInfo.levelInfos[i].sprite, categoryInfo.levelInfos[i].description);
             levelListItem.gameObject.SetActive(true);
         }
     }

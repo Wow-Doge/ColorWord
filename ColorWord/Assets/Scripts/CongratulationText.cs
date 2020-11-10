@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class CongratulationText : MonoBehaviour
 {
-    private readonly string[] displayTexts = new string[] { "Good", "Gooder", "Goodest" };
+    private readonly string[] displayTexts = new string[] { "Good", "Amazing", "Wonderful", "Great" };
     TextMeshProUGUI textTMP;
-    void Start()
+
+    private void OnEnable()
     {
         textTMP = gameObject.GetComponent<TextMeshProUGUI>();
         textTMP.text = displayTexts[Random.Range(0, displayTexts.Length)];

@@ -16,17 +16,23 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     GameObject questionField;
 
     public GameObject uICompleteScreen;
+    GameObject uIComplete;
+    GameObject uIDescription;
 
-    string answer;
 
     private const char placeholder = ' ';
 
+    private string answer;
     private string userInput;
 
     Transform answerField;
 
     public string activeCategoryInfo;
-    public int activeLevelIndex;
+    int activeLevelIndex;
+    Sprite sprite;
+    string description;
+    [SerializeField]
+    private LevelListItem.Type type;
 
     GameObject currentLevelObject;
 
@@ -35,18 +41,16 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     GameObject coinField;
     TextMeshProUGUI coinText;
     public int CoinNumber { get; set; } = 0;
+    private int bonusCoins;
 
     GameObject bonusField;
     TextMeshProUGUI bonusText;
 
-    private int bonusCoins;
-
-    [SerializeField]
-    private LevelListItem.Type type;
+    public GameObject congratulationText;
 
     public List<PlayerData> playerDataList = new List<PlayerData>();
 
-    public GameObject congratulationText;
+
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
@@ -56,6 +60,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         bonusField = guessGameplay.transform.GetChild(6).gameObject;
         coinText = coinField.gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>();
         bonusText = bonusField.transform.GetComponent<TextMeshProUGUI>();
+        uIComplete = uICompleteScreen.transform.GetChild(1).gameObject;
+        uIDescription = uICompleteScreen.transform.GetChild(2).gameObject;
     }
 
     public void CreateAnswerField()
@@ -85,7 +91,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         if (answer.Contains(letter))
         {
             UpdateAnswer(letter);
-            StopCoroutine(ShowTextWhenCorrect());
             StartCoroutine(ShowTextWhenCorrect());
             //if winning
             if (CheckWinCondition())
@@ -138,6 +143,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         }
     }
 
+    //update the answer to the game
     public void UpdateAnswer(char letter)
     {
         char[] userInputArray = userInput.ToCharArray();
@@ -150,14 +156,14 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             if (answer[i] == letter)
             {
                 userInputArray[i] = letter;
-                TextMeshProUGUI text = answerField.GetChild(i).gameObject.transform.GetChild(0).transform.gameObject.GetComponent<TextMeshProUGUI>();
+                TextMeshProUGUI text = answerField.GetChild(i).GetChild(0).GetComponent<TextMeshProUGUI>();
                 text.text = letter.ToString();
             }
         }
         userInput = new string(userInputArray);
     }
 
-    //check if user input match the answer
+    //check if userInput match the answer and return bool type
     public bool CheckWinCondition()
     {
         return answer.Equals(userInput);
@@ -167,9 +173,23 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         yield return new WaitForSeconds(1f);
         uICompleteScreen.SetActive(true);
+        uIComplete.SetActive(true);
         yield return new WaitForSeconds(1f);
+        uIDescription.SetActive(true);
+        GetImageAndDescription();
+        uIComplete.SetActive(false);
+        yield return new WaitForSeconds(2f);
+        uIDescription.SetActive(false);
         uICompleteScreen.SetActive(false);
         LevelComplete();
+    }
+
+    public void GetImageAndDescription()
+    {
+        Image image = uIDescription.transform.GetChild(0).GetChild(0).GetComponent<Image>();
+        image.sprite = sprite;
+        TextMeshProUGUI descriptionText = uIDescription.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+        descriptionText.text = description;
     }
 
     IEnumerator ShowTextWhenCorrect()
@@ -184,7 +204,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         for (int i = 0; i < categoryList.transform.childCount; i++)
         {
-            CategoryListItem categoryListItem = categoryList.gameObject.transform.GetChild(i).gameObject.transform.GetComponent<CategoryListItem>();
+            CategoryListItem categoryListItem = categoryList.transform.GetChild(i).GetComponent<CategoryListItem>();
             if (activeCategoryInfo == categoryListItem.categoryName)
             {
                 if (type == LevelListItem.Type.Normal)
@@ -202,6 +222,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         coinText.text = CoinNumber.ToString();
     }
 
+
+    //pass the info to UILevel, UICategory and save the game, also set this gameobject to false
     public void LevelComplete()
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
@@ -219,7 +241,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         guessGameplay.SetActive(false);
     }
 
-    public void ReturnToUILevelFail()
+    public void ReturnToUILevel()
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         uILevel.ShowLevel();
@@ -233,12 +255,16 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         bonusText.text = "Bonus: " + bonusCoins + "$";
     }
 
-    public void StartLevel(string answer, string levelQuestion, int levelIndex, LevelListItem.Type type)
+    //get the information of level
+    public void StartLevel(string answer, string levelQuestion, int levelIndex, LevelListItem.Type type, Sprite sprite, string description)
     {
         this.answer = answer;
         questionField.transform.gameObject.GetComponent<TextMeshProUGUI>().text = levelQuestion;
         this.activeLevelIndex = levelIndex;
         this.type = type;
+        this.sprite = sprite;
+        this.description = description;
+
         CreateAnswerField();
         currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "LEVEL " + levelIndex.ToString();
         coinText.text = CoinNumber.ToString();

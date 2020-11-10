@@ -17,6 +17,7 @@ using UnityEngine.UI;
     public class LevelInfo
     {
         public string name;
+        [TextArea]
         public string question;
         public string answer;
         public Sprite sprite;

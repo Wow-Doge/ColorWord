@@ -19,6 +19,9 @@ public class LevelListItem : MonoBehaviour
     private string categoryName;
     [SerializeField]
     private int levelIndex;
+
+    private Sprite sprite;
+    private string description;
     public enum Type
     {
         Normal,
@@ -33,13 +36,15 @@ public class LevelListItem : MonoBehaviour
         levelNameText = gameObject.GetComponentInChildren<TextMeshProUGUI>();
         levelNameText.text = levelIndex.ToString();
     }
-    public void Setup(CategoryInfo categoryInfo, int levelIndex, Type type, string levelAnswer, string levelQuestion)
+    public void Setup(CategoryInfo categoryInfo, int levelIndex, Type type, string levelAnswer, string levelQuestion, Sprite sprite, string description)
     {
         this.categoryName = categoryInfo.name;
         this.levelIndex = levelIndex;
         this.type = type;
         this.levelAnswer = levelAnswer;
         this.levelQuestion = levelQuestion;
+        this.sprite = sprite;
+        this.description = description;
 
         completedLevelImage.gameObject.SetActive(type == Type.Completed);
         lockedLevelImage.gameObject.SetActive(type == Type.Locked);
@@ -52,7 +57,7 @@ public class LevelListItem : MonoBehaviour
             GameObject canvas = GameObject.Find("Canvas");
             GameObject guessGameplayObject = canvas.gameObject.transform.GetChild(4).gameObject;
             guessGameplayObject.SetActive(true);
-            GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex, type);
+            GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex, type, sprite, description);
         }
     }
 
