@@ -12,6 +12,5 @@ public class CongratulationText : MonoBehaviour
     {
         textTMP = gameObject.GetComponent<TextMeshProUGUI>();
         textTMP.text = displayTexts[Random.Range(0, displayTexts.Length)];
-        Debug.Log(textTMP.text);
     }
 }

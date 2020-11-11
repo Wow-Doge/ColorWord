@@ -50,7 +50,7 @@ public class UICategory : MonoBehaviour
         rectTransform.offsetMax = new Vector2(0, 0);
     }
 
-    public void EnableStartMenu()
+    public void DisplayStartMenu()
     {
         startMenu.SetActive(true);
     }

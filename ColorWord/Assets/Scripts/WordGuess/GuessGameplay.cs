@@ -20,7 +20,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     GameObject uIDescription;
 
 
-    private const char placeholder = ' ';
+    private const char placeholder = '_';
 
     private string answer;
     private string userInput;
@@ -55,10 +55,10 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
         questionField = guessGameplay.transform.GetChild(1).gameObject;
-        currentLevelObject = guessGameplay.transform.GetChild(5).gameObject.transform.GetChild(0).gameObject;
+        currentLevelObject = guessGameplay.transform.GetChild(5).GetChild(0).gameObject;
         coinField = guessGameplay.transform.GetChild(4).gameObject;
         bonusField = guessGameplay.transform.GetChild(6).gameObject;
-        coinText = coinField.gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.transform.GetComponent<TextMeshProUGUI>();
+        coinText = coinField.transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         bonusText = bonusField.transform.GetComponent<TextMeshProUGUI>();
         uIComplete = uICompleteScreen.transform.GetChild(1).gameObject;
         uIDescription = uICompleteScreen.transform.GetChild(2).gameObject;
@@ -67,6 +67,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     public void CreateAnswerField()
     {
         StringBuilder sb = new StringBuilder(userInput, 20);
+
+        //delete child from previous level
         if (answerField.childCount > 0)
         {
             sb.Remove(0, userInput.Length);
@@ -75,12 +77,13 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
                 Destroy(childObject.gameObject);
             }
         }
+
         for (int i = 0; i < answer.Length; i++)
         {
             sb.Append(placeholder);
             userInput = sb.ToString();
             Instantiate(letterPrefab, new Vector3(answerField.position.x, answerField.position.y, answerField.position.z), Quaternion.identity, answerField);
-            TextMeshProUGUI textLetter = answerField.GetComponentInChildren<TextMeshProUGUI>();
+            TextMeshProUGUI textLetter = answerField.transform.GetChild(i).GetChild(0).GetComponent<TextMeshProUGUI>();
             textLetter.text = placeholder.ToString();
         }
     }
@@ -176,11 +179,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         uIComplete.SetActive(true);
         yield return new WaitForSeconds(1f);
         uIDescription.SetActive(true);
-        GetImageAndDescription();
         uIComplete.SetActive(false);
-        yield return new WaitForSeconds(2f);
-        uIDescription.SetActive(false);
-        uICompleteScreen.SetActive(false);
+        GetImageAndDescription();
         LevelComplete();
     }
 
@@ -223,7 +223,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     }
 
 
-    //pass the info to UILevel, UICategory and save the game, also set this gameobject to false
+    //pass the info to UILevel, UICategory and save the game
     public void LevelComplete()
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
@@ -235,10 +235,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         GetCategoryLevelNumber();
         GetDataList();
         Save();
-
-        uILevel.ShowLevel();
-        uILevel.DisplayLevel();
-        guessGameplay.SetActive(false);
     }
 
     public void ReturnToUILevel()
@@ -246,6 +242,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         uILevel.ShowLevel();
         uILevel.DisplayLevel();
+        uIDescription.SetActive(false);
+        uICompleteScreen.SetActive(false);
         guessGameplay.SetActive(false);
     }
 
