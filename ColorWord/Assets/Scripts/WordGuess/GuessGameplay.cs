@@ -241,7 +241,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         uILevel.ShowLevel();
-        uILevel.DisplayLevel();
+        uILevel.SetupLevel();
         uIDescription.SetActive(false);
         uICompleteScreen.SetActive(false);
         guessGameplay.SetActive(false);

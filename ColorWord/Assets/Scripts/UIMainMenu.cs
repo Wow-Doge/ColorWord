@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class UIMainMenu : MonoBehaviour
 {
-    public GameObject startMenu;
-    public void PlayButton()
+    public void HideMainMenu()
     {
-        startMenu.SetActive(true);
         gameObject.SetActive(false);
+    }
+
+    public void ShowMainMenu()
+    {
+        gameObject.SetActive(true);
     }
 }

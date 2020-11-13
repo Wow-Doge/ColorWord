@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class UIStartMenu : MonoBehaviour
 {
-    public GameObject mainMenu;
-    public void BackButton()
+    public void ShowStartMenu()
     {
-        mainMenu.SetActive(true);
-        gameObject.SetActive(false);
+        gameObject.SetActive(true);
     }
 
-    public void StartLevel()
+    public void HideStartMenu()
     {
         gameObject.SetActive(false);
     }

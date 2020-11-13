@@ -10,48 +10,42 @@ public class UICategory : MonoBehaviour
     public GameObject categoryListPrefab;
 
     public GameObject uICategoryTopBar;
-    public GameObject startMenu;
+
+    private ObjectPool categoryItemObjectPool;
 
     void Start()
     {
-        GuessManager.Instance.GetCategoryInfos(categoryListPrefab, categoryListContainer);
+        categoryItemObjectPool = new ObjectPool(categoryListPrefab, 5, categoryListContainer);
     }
     private void Update()
     {
-        DisplayCategory();
+        SetupCategory();
     }
 
+    public void SetupCategory()
+    {
+        categoryItemObjectPool.ReturnAllObjectsToPool();
+
+        for (int i = 0; i < GuessManager.Instance.CategoryInfos.Count; i++)
+        {
+            CategoryInfo categoryInfo = GuessManager.Instance.CategoryInfos[i];
+            CategoryListItem categoryListItem = gameObject.transform.GetChild(1).GetChild(i).transform.GetComponent<CategoryListItem>();
+            categoryListItem.Setup(categoryInfo);
+            categoryListItem.gameObject.SetActive(true);
+        }
+    }
     public void DisplayUICategory()
     {
         gameObject.SetActive(true);
     }
 
-    public void DisplayCategory()
-    {
-        for (int i = 0; i < GuessManager.Instance.CategoryInfos.Count; i++)
-        {
-            CategoryInfo categoryInfo = GuessManager.Instance.CategoryInfos[i];
-            CategoryListItem categoryListItem = gameObject.transform.GetChild(1).gameObject.transform.GetChild(i).transform.GetComponent<CategoryListItem>();
-            categoryListItem.Setup(categoryInfo);
-        }
-    }
-
     public void HideCategory()
     {
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        rectTransform.offsetMin = new Vector2(900, 0);
-        rectTransform.offsetMax = new Vector2(900, 0);
+        UIManager.Instance.Hide(gameObject);
     }
 
     public void ShowCategory()
     {
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        rectTransform.offsetMin = new Vector2(0, 0);
-        rectTransform.offsetMax = new Vector2(0, 0);
-    }
-
-    public void DisplayStartMenu()
-    {
-        startMenu.SetActive(true);
+        UIManager.Instance.Show(gameObject);
     }
 }

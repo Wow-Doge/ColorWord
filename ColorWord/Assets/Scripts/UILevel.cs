@@ -30,7 +30,7 @@ public class UILevel : MonoBehaviour
         this.numbersOfActiveLevel = activeLevelNumber;
     }
 
-    public void DisplayLevel()
+    public void SetupLevel()
     {
         ////Get information of current category
         CategoryInfo categoryInfo = GuessManager.Instance.GetCategoryInfo(activeCategoryName);
@@ -61,19 +61,11 @@ public class UILevel : MonoBehaviour
     
     public void ShowLevel()
     {
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        rectTransform.offsetMin = new Vector2(0, 0);
-        rectTransform.offsetMax = new Vector2(0, 0);
+        UIManager.Instance.Show(gameObject);
     }
 
     public void HideLevel()
     {
-        RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
-        rectTransform.offsetMin = new Vector2(-900, 0);
-        rectTransform.offsetMax = new Vector2(-900, 0);
-        foreach (Transform childObject in levelListContainer)
-        {
-            childObject.gameObject.SetActive(false);
-        }
+        UIManager.Instance.Hide(gameObject);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Security.Policy;
 using TMPro;
 using UnityEngine;
 
@@ -66,9 +65,10 @@ public class LevelListItem : MonoBehaviour
         if (type != Type.Locked)
         {
             GameObject uILevel = GameObject.Find("UILevel");
-            RectTransform rectTransform = uILevel.GetComponent<RectTransform>();
-            rectTransform.offsetMin = new Vector2(-900, 0);
-            rectTransform.offsetMax = new Vector2(-900, 0);
+            //RectTransform rectTransform = uILevel.GetComponent<RectTransform>();
+            //rectTransform.offsetMin = new Vector2(-900, 0);
+            //rectTransform.offsetMax = new Vector2(-900, 0);
+            UIManager.Instance.Hide(uILevel);
         }
     }
 }

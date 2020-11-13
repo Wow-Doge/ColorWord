@@ -35,7 +35,7 @@ public class CategoryListItem : MonoBehaviour
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         uILevel.ShowLevel();
         uILevel.SetupCategoryListItem(categoryName, NumOfActiveLevel);
-        uILevel.DisplayLevel();
+        uILevel.SetupLevel();
         GuessGameplay.Instance.activeCategoryInfo = categoryName;
     }
 }

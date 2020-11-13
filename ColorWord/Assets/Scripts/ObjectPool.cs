@@ -40,6 +40,14 @@ public class ObjectPool
         }
     }
 
+    public void GetAllObjectsFromPool()
+    {
+        for (int i = 0; i < instantiatedObjects.Capacity; i++)
+        {
+            instantiatedObjects[i].SetActive(true);
+        }
+    }
+
     private GameObject CreateObject()
     {
         GameObject obj = GameObject.Instantiate(objectPrefab);
