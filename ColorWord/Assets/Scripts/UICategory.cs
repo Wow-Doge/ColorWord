@@ -13,7 +13,7 @@ public class UICategory : MonoBehaviour
 
     private ObjectPool categoryItemObjectPool;
 
-    void Start()
+    void Awake()
     {
         categoryItemObjectPool = new ObjectPool(categoryListPrefab, 5, categoryListContainer);
     }

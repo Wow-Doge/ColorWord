@@ -7,6 +7,7 @@ using System.Text;
 using UnityEngine.UI;
 using System;
 using System.IO;
+using DG.Tweening;
 
 public class GuessGameplay : SingletonComponent<GuessGameplay>
 {
@@ -104,6 +105,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         else
         {
             Debug.Log("wrong letter");
+
             if (bonusCoins > 5)
             {
                 bonusCoins -= 5;

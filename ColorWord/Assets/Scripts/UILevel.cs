@@ -19,7 +19,7 @@ public class UILevel : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public void Start()
+    private void Awake()
     {
         levelItemObjectPool = new ObjectPool(levelListPrefab, 10, levelListContainer);
     }
