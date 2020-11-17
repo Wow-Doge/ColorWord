@@ -51,7 +51,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     public List<PlayerData> playerDataList = new List<PlayerData>();
 
-
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
@@ -69,7 +68,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         StringBuilder sb = new StringBuilder(userInput, 20);
 
-        //delete child from previous level
+        //delete answer text object from previous level
         if (answerField.childCount > 0)
         {
             sb.Remove(0, userInput.Length);
@@ -78,7 +77,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
                 Destroy(childObject.gameObject);
             }
         }
-
+        //add '_' to userInput for each letter in answer
+        //Example: answer = "CAT" --> userInput: "___"
         for (int i = 0; i < answer.Length; i++)
         {
             sb.Append(placeholder);
@@ -89,66 +89,77 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         }
     }
 
+    //when player press a button
     public void InputSystem(Button button)
     {
         char letter = button.GetComponentInChildren<TextMeshProUGUI>().text.ToCharArray()[0];
-        if (answer.Contains(letter))
+        UpdateAnswer(letter);
+        if (!userInput.Contains(placeholder))
         {
-            UpdateAnswer(letter);
-            StartCoroutine(ShowTextWhenCorrect());
-            //if winning
-            if (CheckWinCondition())
+            if (!CheckWinCondition())
             {
-                StartCoroutine(ShowCompleteScreen());
-            }
-        }
-        else
-        {
-            Debug.Log("wrong letter");
-
-            if (bonusCoins > 5)
-            {
-                bonusCoins -= 5;
+                ResetUserInput();
             }
             else
             {
-                bonusCoins = 0;
+                StartCoroutine(ShowTextWhenCorrect());
+                StartCoroutine(ShowCompleteScreen());
             }
-            bonusText.text = "Bonus: " + bonusCoins + "$";
         }
+    }
+
+    public void ResetUserInput()
+    {
+        char[] userInputArray = userInput.ToCharArray();
+        for (int i = 0; i < userInput.Length; i++)
+        {
+            userInputArray[i] = placeholder;
+            TextMeshProUGUI text = answerField.GetChild(i).GetChild(0).GetComponent<TextMeshProUGUI>();
+            text.text = userInputArray[i].ToString();
+        }
+        userInput = new string(userInputArray);
     }
 
     public void GetHint()
     {
-        if (CoinNumber >= 5)
-        {
-            StringBuilder sb = new StringBuilder();
-            char[] firstArray = answer.ToCharArray();
-            char[] secondArray = userInput.ToCharArray();
+        int index = UnityEngine.Random.Range(0, answer.Length);
+        char c = answer[index];
 
-            var differentChars = firstArray.Except(secondArray);
-            foreach (char c in differentChars)
-            {
-                sb.Append(c);
-            }
+        char[] userInputArray = userInput.ToCharArray();
+        userInputArray[index] = c;
 
-            char ch = sb[UnityEngine.Random.Range(0, sb.Length)];
-            UpdateAnswer(ch);
-            if (CheckWinCondition())
-            {
-                StartCoroutine(ShowCompleteScreen());
-                //Do something to congratulate player;
-            }
-            CoinChange(-5);
-        }
-        else
-        {
-            Debug.Log("Not enough coin");
-            //Will add some popup later
-        }
+        TextMeshProUGUI text = answerField.GetChild(index).GetChild(0).GetComponent<TextMeshProUGUI>();
+        text.text = userInputArray[index].ToString();
+
+        userInput = new string(userInputArray);
+
+        //if (CoinNumber >= 5)
+        //{
+        //    StringBuilder sb = new StringBuilder();
+        //    char[] firstArray = answer.ToCharArray();
+        //    char[] secondArray = userInput.ToCharArray();
+
+        //    var differentChars = firstArray.Except(secondArray);
+        //    foreach (char c in differentChars)
+        //    {
+        //        sb.Append(c);
+        //    }
+
+        //    char ch = sb[UnityEngine.Random.Range(0, sb.Length)];
+        //    UpdateAnswer(ch);
+        //    if (CheckWinCondition())
+        //    {
+        //        StartCoroutine(ShowCompleteScreen());
+        //    }
+        //    CoinChange(-5);
+        //}
+        //else
+        //{
+        //    Debug.Log("Not enough coin");
+        //}
     }
 
-    //update the answer to the game
+    //add a letter in the answer field 
     public void UpdateAnswer(char letter)
     {
         char[] userInputArray = userInput.ToCharArray();
@@ -158,12 +169,20 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             {
                 continue;
             }
-            if (answer[i] == letter)
+            //if (answer[i] == letter)
+            //{
+            //    userInputArray[i] = letter;
+            //    TextMeshProUGUI text = answerField.GetChild(i).GetChild(0).GetComponent<TextMeshProUGUI>();
+            //    text.text = letter.ToString();
+            //}
+            if (userInputArray[i] == placeholder)
             {
                 userInputArray[i] = letter;
                 TextMeshProUGUI text = answerField.GetChild(i).GetChild(0).GetComponent<TextMeshProUGUI>();
                 text.text = letter.ToString();
+                break;
             }
+            
         }
         userInput = new string(userInputArray);
     }

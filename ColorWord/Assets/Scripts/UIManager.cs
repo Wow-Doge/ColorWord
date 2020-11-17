@@ -8,16 +8,12 @@ public class UIManager : SingletonComponent<UIManager>
     public void Show(GameObject data)
     {
         RectTransform rectTransform = data.GetComponent<RectTransform>();
-        //rectTransform.offsetMin = new Vector2(0, 0);
-        //rectTransform.offsetMax = new Vector2(0, 0);
         rectTransform.DOAnchorPos(Vector2.zero, 0.25f).SetDelay(0.25f);
     }
 
     public void Hide(GameObject data)
     {
         RectTransform rectTransform = data.GetComponent<RectTransform>();
-        //rectTransform.offsetMin = new Vector2(900, 0);
-        //rectTransform.offsetMax = new Vector2(900, 0);
         rectTransform.DOAnchorPos(new Vector2(900, 0), 0.25f);
     }
 

@@ -42,7 +42,7 @@ public class ObjectPool
 
     public void GetAllObjectsFromPool()
     {
-        for (int i = 0; i < instantiatedObjects.Capacity; i++)
+        for (int i = 0; i < instantiatedObjects.Count; i++)
         {
             instantiatedObjects[i].SetActive(true);
         }
