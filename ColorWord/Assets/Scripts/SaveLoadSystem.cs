@@ -6,20 +6,26 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveLoadSystem
 {
-    //public static void SavePlayer()
-    //{
-    //    List<PlayerData> playerData = new List<PlayerData>();
-    //    playerData = GuessGameplay.Instance.playerDataList;
-    //    string json = "";
-    //    foreach (var item in playerData)
-    //    {
-    //        json += " [ " + item.categoryName + " : " + item.completedLevel + " ] ";
-    //    }
-    //    Debug.Log(json);
-    //    json = JsonUtility.ToJson(playerData);
-    //    //Debug.Log(json);
+    public static void Save()
+    {
+        PlayerData playerData = new PlayerData();
+        Debug.Log(JsonUtility.ToJson(playerData));
+        string path = Application.dataPath + "/text.txt";
+        File.WriteAllText(path, JsonUtility.ToJson(playerData));
+    }
 
-    //    string path = Application.dataPath + "/text.txt";
-    //    File.WriteAllText(path, json);
-    //}
+    public static PlayerData Load()
+    {
+        if (File.Exists(Application.dataPath + "/text.txt"))
+        {
+            string loadPath = File.ReadAllText(Application.dataPath + "/text.txt");
+            PlayerData playerData = JsonUtility.FromJson<PlayerData>(loadPath);
+            return playerData;
+        }
+        else
+        {
+            File.Create(Application.dataPath + "/text.txt");
+            return null;
+        }
+    }
 }

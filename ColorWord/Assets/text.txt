@@ -1,1 +1,1 @@
-{"playerDatas":[{"categoryName":"Sports","completedLevel":3},{"categoryName":"Animals","completedLevel":2},{"categoryName":"Fruits","completedLevel":0},{"categoryName":"Jobs","completedLevel":0},{"categoryName":"Drinks","completedLevel":0}],"coins":125}
+{"dataList":[{"categoryName":"Sports","completedLevel":2},{"categoryName":"Animals","completedLevel":1},{"categoryName":"Fruits","completedLevel":0},{"categoryName":"Jobs","completedLevel":0},{"categoryName":"Drinks","completedLevel":0}],"coins":75,"rewardsIndex":0}
