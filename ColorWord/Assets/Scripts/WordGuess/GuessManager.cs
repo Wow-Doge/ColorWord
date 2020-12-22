@@ -25,10 +25,21 @@ using UnityEngine.UI;
         public string description;
     }
 
+[System.Serializable]
+public class ChallengeInfo
+{
+    public string title;
+    public int challengeIndex;
+    public string challengeDescription;
+    public int goal;
+}
 public class GuessManager : SingletonComponent<GuessManager>
 {
     [SerializeField]
     private List<CategoryInfo> categoryInfos;
+
+    [SerializeField]
+    private List<ChallengeInfo> challengeInfos;
 
     //public void GetCategoryInfos(GameObject categoryPrefab, Transform categoryListContainer)
     //{
@@ -44,6 +55,26 @@ public class GuessManager : SingletonComponent<GuessManager>
         {
             return categoryInfos;
         }
+    }
+
+    public List<ChallengeInfo> ChallengeInfos
+    {
+        get
+        {
+            return challengeInfos;
+        }
+    }
+
+    public ChallengeInfo GetChallengeInfo(string name)
+    {
+        for (int i = 0; i < ChallengeInfos.Count; i++)
+        {
+            if (name == challengeInfos[i].title)
+            {
+                return ChallengeInfos[i];
+            }
+        }
+        return null;
     }
 
     public CategoryInfo GetCategoryInfo(string categoryName)

@@ -21,6 +21,11 @@ public class LevelListItem : MonoBehaviour
 
     private Sprite sprite;
     private string description;
+
+    [SerializeField]
+    private GameObject timeModeGO;
+    [SerializeField]
+    private GameObject lockModeGO;
     public enum Type
     {
         Normal,
@@ -28,8 +33,10 @@ public class LevelListItem : MonoBehaviour
         Locked
     }
 
-    public Type type;
+    private bool isTimeMode;
+    private bool isLockMode;
 
+    public Type type;
     void Start()
     {
         levelNameText = gameObject.GetComponentInChildren<TextMeshProUGUI>();
@@ -53,11 +60,19 @@ public class LevelListItem : MonoBehaviour
     {
         if (type != Type.Locked)
         {
-            GameObject canvas = GameObject.Find("Canvas");
-            GameObject guessGameplayObject = canvas.gameObject.transform.GetChild(4).gameObject;
+            GameObject guessMode = GameObject.Find("Canvas/GuessMode");
+            GameObject guessGameplayObject = guessMode.gameObject.transform.GetChild(2).gameObject;
             guessGameplayObject.SetActive(true);
-            GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex, type, sprite, description);
+            GuessGameplay.Instance.StartLevel(levelAnswer, levelQuestion, levelIndex, type, sprite, description, isTimeMode, isLockMode);
         }
+    }
+
+    public void SetupMode(bool TimeMode, bool LockMode)
+    {
+        this.isTimeMode = TimeMode;
+        this.isLockMode = LockMode;
+        timeModeGO.SetActive(isTimeMode);
+        lockModeGO.SetActive(isLockMode);
     }
 
     public void HideUILevel()
@@ -65,9 +80,6 @@ public class LevelListItem : MonoBehaviour
         if (type != Type.Locked)
         {
             GameObject uILevel = GameObject.Find("UILevel");
-            //RectTransform rectTransform = uILevel.GetComponent<RectTransform>();
-            //rectTransform.offsetMin = new Vector2(-900, 0);
-            //rectTransform.offsetMax = new Vector2(-900, 0);
             UIManager.Instance.Hide(uILevel);
         }
     }

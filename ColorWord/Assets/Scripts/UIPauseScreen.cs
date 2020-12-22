@@ -18,7 +18,7 @@ public class UIPauseScreen : MonoBehaviour
 
     IEnumerator CloseUI()
     {
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSeconds(0.1f);
         gameObject.SetActive(false);
     }
 }

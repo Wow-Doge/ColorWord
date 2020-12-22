@@ -7,7 +7,10 @@ using System.Text;
 using UnityEngine.UI;
 using System;
 using System.IO;
-using DG.Tweening;
+using UnityEngine.Networking;
+using SimpleJSON;
+
+
 
 public class GuessGameplay : SingletonComponent<GuessGameplay>
 {
@@ -19,7 +22,6 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     public GameObject uICompleteScreen;
     GameObject uIComplete;
     GameObject uIDescription;
-
 
     private const char placeholder = '_';
 
@@ -52,17 +54,42 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     [HideInInspector]
     public List<DataList> dataList = new List<DataList>();
 
+    //[HideInInspector]
+    public List<ListOfChallenge> challengeListGoals = new List<ListOfChallenge>();
+
+    public GameObject challengeList;
+    [SerializeField]
+    private GameObject uIChallenge;
+
+    [SerializeField] private GameObject uITimeMode;
+    [SerializeField] private GameObject uILockMode;
+    [SerializeField] private GameObject totalClickGO;
+    [SerializeField] private GameObject clockGO;
+    [SerializeField] private GameObject uIPopup;
+
+    private int totalClick;
+    private int maxClick = 20;
+
+    private float currentTime;
+    private bool isTimeout;
+    private float startingTime = 50f;
+
+    private event EventHandler LockEvent;
+    private event EventHandler TimeEvent;
+
+    WordAPI wordAPI;
     void Start()
     {
         answerField = guessGameplay.transform.GetChild(0).gameObject.transform;
         imageField = guessGameplay.transform.GetChild(1).gameObject;
         currentLevelObject = guessGameplay.transform.GetChild(5).GetChild(0).gameObject;
         coinField = guessGameplay.transform.GetChild(4).gameObject;
-        bonusField = guessGameplay.transform.GetChild(6).gameObject;
+        bonusField = guessGameplay.transform.GetChild(5).gameObject.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject;
         coinText = coinField.transform.GetChild(0).gameObject.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         bonusText = bonusField.transform.GetComponent<TextMeshProUGUI>();
         uIComplete = uICompleteScreen.transform.GetChild(1).gameObject;
         uIDescription = uICompleteScreen.transform.GetChild(2).gameObject;
+        wordAPI = GetComponent<WordAPI>();
     }
 
     public void CreateAnswerField()
@@ -95,6 +122,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     {
         char letter = button.GetComponentInChildren<TextMeshProUGUI>().text.ToCharArray()[0];
         UpdateAnswer(letter);
+        LockEvent?.Invoke(this, EventArgs.Empty);
         if (!userInput.Contains(placeholder))
         {
             if (!CheckWinCondition())
@@ -166,12 +194,15 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
 
     IEnumerator ShowCompleteScreen()
     {
-        yield return new WaitForSeconds(1f);
         uICompleteScreen.SetActive(true);
-        uIComplete.SetActive(true);
+        Image image = uICompleteScreen.gameObject.transform.GetChild(0).gameObject.transform.GetComponent<Image>();
+        StartCoroutine(UIManager.Instance.FadeIn(image));
         yield return new WaitForSeconds(1f);
+        RectTransform rect = uIComplete.gameObject.GetComponent<RectTransform>();
+        StartCoroutine(UIManager.Instance.ScaleUp(rect));
+        yield return new WaitForSeconds(2f);
         uIDescription.SetActive(true);
-        uIComplete.SetActive(false);
+        StartCoroutine(wordAPI.GetAPI(answer));
         GetImageAndDescription();
         LevelComplete();
     }
@@ -184,6 +215,8 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         descriptionText.text = description;
     }
 
+
+
     IEnumerator ShowTextWhenCorrect()
     {
         congratulationText.SetActive(true);
@@ -192,7 +225,7 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
     }
 
     //increase numbers of active level in category
-    public void GetCategoryLevelNumber()
+    public void IncreaseCategoryLevelNumber()
     {
         for (int i = 0; i < categoryList.transform.childCount; i++)
         {
@@ -214,6 +247,19 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         coinText.text = CoinNumber.ToString();
     }
 
+    public void IncreaseChallengeGoal()
+    {
+        for (int i = 0; i < challengeList.transform.childCount; i++)
+        {
+            ChallengeListItem challengeListItem = challengeList.transform.GetChild(i).gameObject.transform.GetComponent<ChallengeListItem>();
+            if (challengeListItem.challengeName == "Level")
+            {
+                challengeListItem.curGoal++;
+            }
+            break;
+        }
+    }
+
     //pass the info to UILevel, UICategory and save the game
     public void LevelComplete()
     {
@@ -223,9 +269,14 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
             CoinChange(bonusCoins);
             uILevel.numbersOfActiveLevel++;
         }
-        GetCategoryLevelNumber();
+        IncreaseCategoryLevelNumber();
+        IncreaseChallengeGoal();
         GetDataList();
+        GetChallengeList();
         SaveLoadSystem.Save();
+
+        LockEvent -= ClickCount;
+        TimeEvent -= TimeCount;
     }
 
     public void ReturnToUILevel()
@@ -233,19 +284,85 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         UILevel uILevel = GameObject.Find("UILevel").GetComponent<UILevel>();
         uILevel.ShowLevel();
         uILevel.SetupLevel();
+        Image image = uICompleteScreen.gameObject.transform.GetChild(0).gameObject.transform.GetComponent<Image>();
+        UIManager.Instance.FadeOut(image);
+
+        totalClickGO.SetActive(false);
+
+
+        clockGO.SetActive(false);
+
+
         uIDescription.SetActive(false);
         uICompleteScreen.SetActive(false);
         guessGameplay.SetActive(false);
     }
 
-    public void BonusCoinsStart()
+    public void BonusCoinsStart(bool isTime, bool isLock)
     {
-        bonusCoins = 25;
-        bonusText.text = "Bonus: " + bonusCoins + "$";
+        if (isTime || isLock)
+        {
+            bonusCoins = 50;
+            bonusText.text = "Bonus: " + bonusCoins + "$";
+        }
+        else
+        {
+            bonusCoins = 25;
+            bonusText.text = "Bonus: " + bonusCoins + "$";
+        }
+
+    }
+    public void TimeMode()
+    {
+        //Start mode
+        Image image = uITimeMode.transform.GetComponent<Image>();
+        StartCoroutine(UIManager.Instance.FadeIn(image));
+        clockGO.SetActive(true);
+        isTimeout = false;
+        currentTime = startingTime;
+        TimeEvent += TimeCount;
+    }
+
+    private void TimeCount(object sender, EventArgs e)
+    {
+        currentTime -= 1 * Time.deltaTime;
+        TextMeshProUGUI text = clockGO.transform.GetComponent<TextMeshProUGUI>();
+        text.text = "Time: " + currentTime.ToString("0");
+        if (currentTime < 0)
+        {
+            isTimeout = true;
+            uIPopup.SetActive(true);
+            TimeEvent -= TimeCount;
+        }
+    }
+
+    public void LockMode()
+    {
+        //Start mode    
+        Image image = uILockMode.transform.GetComponent<Image>();
+        StartCoroutine(UIManager.Instance.FadeIn(image));
+        totalClickGO.SetActive(true);
+        LockEvent += ClickCount;
+    }
+
+    private void ClickCount(object sender, EventArgs e)
+    {
+        totalClick += 1;
+        totalClickGO.transform.GetComponent<TextMeshProUGUI>().text = "Total click: " + totalClick.ToString() + "/" + maxClick.ToString();
+        if (totalClick >= 20)
+        {
+            uIPopup.SetActive(true);
+            LockEvent -= ClickCount;
+        }
+    }
+
+    public void Update()
+    {
+        TimeEvent?.Invoke(this, EventArgs.Empty);
     }
 
     //get the information of level
-    public void StartLevel(string answer, string levelQuestion, int levelIndex, LevelListItem.Type type, Sprite sprite, string description)
+    public void StartLevel(string answer, string levelQuestion, int levelIndex, LevelListItem.Type type, Sprite sprite, string description, bool isTimeMode, bool isLockMode)
     {
         this.answer = answer;
         //questionField.transform.gameObject.GetComponent<TextMeshProUGUI>().text = levelQuestion;
@@ -254,12 +371,25 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
         this.sprite = sprite;
         this.description = description;
 
+        totalClick = 0;
+
+        if (isTimeMode)
+        {
+            TimeMode();
+        }
+
+        if (isLockMode)
+        {
+            LockMode();
+        }
+
         CreateAnswerField();
         currentLevelObject.transform.gameObject.GetComponent<TextMeshProUGUI>().text = "LEVEL " + levelIndex.ToString();
         imageField.gameObject.GetComponent<Image>().sprite = sprite;
         coinText.text = CoinNumber.ToString();
-        BonusCoinsStart();
-    }
+        BonusCoinsStart(isTimeMode, isLockMode);
+    } 
+
 
     public void ResetProgress()
     {
@@ -294,6 +424,36 @@ public class GuessGameplay : SingletonComponent<GuessGameplay>
                     dataList.Add(new DataList(categoryListItem));
                 }
             }
+        }
+    }
+
+    public void GetChallengeList()
+    {
+        for (int i = 0; i < challengeList.transform.childCount; i++)
+        {
+            ChallengeListItem challengeListItem = challengeList.transform.GetChild(i).gameObject.GetComponent<ChallengeListItem>();
+            if (challengeListGoals.Count == 0)
+            {
+                challengeListGoals.Add(new ListOfChallenge(challengeListItem));
+            }
+            if (challengeListGoals.Count > 0)
+            {
+                if (challengeListGoals.Any(challenge => challenge.name == challengeListItem.challengeName))
+                {
+                    foreach (var data in challengeListGoals)
+                    {
+                        if (data.name == challengeListItem.challengeName)
+                        {
+                            data.curGoal = challengeListItem.curGoal;
+                        }
+                    }
+                }
+                else if (challengeListGoals.Any(challenge => challenge.name != challengeListItem.challengeName))
+                {
+                    challengeListGoals.Add(new ListOfChallenge(challengeListItem));
+                }
+            }
+            challengeListItem.ChallengeUIUpdate();
         }
     }
 

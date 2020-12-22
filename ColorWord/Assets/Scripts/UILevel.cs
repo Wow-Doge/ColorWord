@@ -19,6 +19,8 @@ public class UILevel : MonoBehaviour
         gameObject.SetActive(true);
     }
 
+    [SerializeField] private List<int> timeMode;
+    [SerializeField] private List<int> lockMode;
     private void Awake()
     {
         levelItemObjectPool = new ObjectPool(levelListPrefab, 10, levelListContainer);
@@ -56,6 +58,12 @@ public class UILevel : MonoBehaviour
 
             levelListItem.Setup(categoryInfo, i + 1, type, categoryInfo.levelInfos[i].answer, categoryInfo.levelInfos[i].question, categoryInfo.levelInfos[i].sprite, categoryInfo.levelInfos[i].description);
             levelListItem.gameObject.SetActive(true);
+        }
+
+        for (int j = 0; j < categoryInfo.levelInfos.Count; j++)
+        {
+            LevelListItem levelListItem = levelListContainer.GetChild(j).transform.gameObject.GetComponent<LevelListItem>();
+            levelListItem.SetupMode(timeMode.Contains(j+1), lockMode.Contains(j+1));
         }
     }
     

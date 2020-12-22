@@ -47,12 +47,10 @@ namespace ColorWord
         public void ClaimRewardButton()
         {
             PlayerData playerData = SaveLoadSystem.Load();
-            //PlayerData playerData = new PlayerData();
-            Debug.Log(playerData.coins);
-            Debug.Log(playerData.rewardsIndex);
 
             Reward reward = rewardsDB.GetReward(nextRewardIndex);
-            playerData.coins += reward.amount;
+            //playerData.coins += reward.amount;
+            GuessGameplay.Instance.CoinNumber += reward.amount;
             UpdateCoinsTextUI();
 
             //save next reward index
@@ -65,9 +63,6 @@ namespace ColorWord
 
             SaveLoadSystem.Save();
             DeactivateReward();
-
-            Debug.Log(playerData.coins);
-            Debug.Log(playerData.rewardsIndex);
         }
 
         public void UpdateCoinsTextUI()
